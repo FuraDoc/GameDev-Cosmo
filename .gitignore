@@ -1,0 +1,17 @@
+# Godot 4+
+.godot/
+
+# Imported files
+.import/
+
+# Mono / C#
+*.mono
+data_*/
+mono_crash.*.json
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

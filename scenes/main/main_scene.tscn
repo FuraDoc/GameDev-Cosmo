@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://cf2phlkq76e6o"]
+
+[ext_resource type="Script" uid="uid://bvq42txcxm0j5" path="res://scenes/main/main_scene.gd" id="1_dv3lr"]
+
+[node name="MainScene" type="Control" unique_id=510594631]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_dv3lr")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1460882025]
+layout_mode = 0
+offset_right = 1155.0
+offset_bottom = 650.0
+
+[node name="TitleLabel" type="Label" parent="." unique_id=96433778]
+layout_mode = 0
+offset_left = 192.0
+offset_top = 56.0
+offset_right = 1216.0
+offset_bottom = 592.0
+theme_override_colors/font_color = Color(0.64060575, 0.6473212, 0.7758809, 1)
+theme_override_font_sizes/font_size = 30
+text = "Дом в пустоте"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FlyButton" type="Button" parent="." unique_id=507104556]
+layout_mode = 0
+offset_left = 640.0
+offset_top = 648.0
+offset_right = 768.0
+offset_bottom = 704.0
+text = "В полет!"
+
+[node name="ExitButton" type="Button" parent="." unique_id=1225360141]
+layout_mode = 0
+offset_left = 640.0
+offset_top = 768.0
+offset_right = 768.0
+offset_bottom = 824.0
+text = "Выход"
+
+[connection signal="pressed" from="FlyButton" to="." method="_on_fly_button_pressed"]
+[connection signal="pressed" from="ExitButton" to="." method="_on_exit_button_pressed"]

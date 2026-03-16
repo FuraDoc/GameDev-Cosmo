@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://by4veolisifln"]
+
+[ext_resource type="Texture2D" uid="uid://j4xfwt8kgdox" path="res://cosmo 4.png" id="1_6qulr"]
+
+[node name="ShipScene" type="Control" unique_id=184082764]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="TextureRect" parent="." unique_id=792153040]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 11.200001
+anchor_bottom = 9.8
+offset_left = -56.0
+offset_top = -216.0
+offset_right = -14202.001
+offset_bottom = -8461.801
+texture = ExtResource("1_6qulr")
