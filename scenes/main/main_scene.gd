@@ -7,3 +7,8 @@ func _on_exit_button_pressed():
 	get_tree().quit()
 	get_tree().change_scene_to_file("res://scenes/ship/ship_scene.tscn")
 	pass # Replace with function body.
+
+
+func _on_text_quest_button_pressed():
+	get_tree().change_scene_to_file("res://scenes/text_quest/text_quest.tscn")
+	

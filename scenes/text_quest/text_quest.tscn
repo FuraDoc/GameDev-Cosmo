@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://g2ubvuyc1jyo"]
+
+[ext_resource type="Script" uid="uid://b6qs4xikr7frt" path="res://scenes/text_quest/text_quest.gd" id="1_ne32j"]
+
+[node name="TextQuest" type="Control" unique_id=764714047]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 32.0
+offset_top = 152.0
+offset_right = 707.0
+offset_bottom = 576.0
+script = ExtResource("1_ne32j")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1099934361]
+layout_mode = 0
+offset_left = 1.0
+offset_right = 609.0
+offset_bottom = 431.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=926183247]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1792194429]
+layout_mode = 2
+text = "Текстовый квест"
+horizontal_alignment = 1
+
+[node name="ChoicesContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1696463345]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer" unique_id=2130462339]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
+
+[node name="StoryLabel" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer" unique_id=493677406]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
+text = " какой-нибудь тестовый текст не важно какой, лиш бы отображался"
+autowrap_mode = 2
+
+[node name="CloseButton" type="Button" parent="." unique_id=1430802375]
+layout_mode = 0
+offset_left = 272.0
+offset_top = -131.0
+offset_right = 357.0
+offset_bottom = -100.0
+text = "Закрыть
+"
+
+[connection signal="pressed" from="CloseButton" to="." method="_on_close_button_pressed"]
