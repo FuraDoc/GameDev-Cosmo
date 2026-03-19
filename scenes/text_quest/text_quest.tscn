@@ -2,51 +2,101 @@
 
 [ext_resource type="Script" uid="uid://b6qs4xikr7frt" path="res://scenes/text_quest/text_quest.gd" id="1_ne32j"]
 
+[sub_resource type="Theme" id="Theme_ne32j"]
+
 [node name="TextQuest" type="Control" unique_id=764714047]
 layout_mode = 3
-anchors_preset = 0
-offset_left = 32.0
-offset_top = 152.0
-offset_right = 707.0
-offset_bottom = 576.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_ne32j")
 
-[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1099934361]
-layout_mode = 0
-offset_left = 1.0
-offset_right = 609.0
-offset_bottom = 431.0
+[node name="DimBackground" type="ColorRect" parent="." unique_id=2085137633]
+layout_mode = 1
+anchors_preset = -1
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 1384.0
+offset_bottom = 984.0
+theme = SubResource("Theme_ne32j")
+color = Color(0.0035191667, 0.0035191681, 0.0035191672, 0.15686275)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=926183247]
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=2036646426]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="QuestPanel" type="PanelContainer" parent="CenterContainer" unique_id=2103653425]
+custom_minimum_size = Vector2(1000, 700)
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1792194429]
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/QuestPanel" unique_id=1099934361]
 layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 18
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/QuestPanel/MarginContainer" unique_id=926183247]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="HeaderRow" type="HBoxContainer" parent="CenterContainer/QuestPanel/MarginContainer/VBoxContainer" unique_id=1976796124]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/QuestPanel/MarginContainer/VBoxContainer/HeaderRow" unique_id=1792194429]
+custom_minimum_size = Vector2(400, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_colors/font_color = Color(0.6380021, 0.9805699, 0.9730697, 1)
+theme_override_colors/font_shadow_color = Color(0.8509804, 0.8509804, 0.8509804, 0.16470589)
+theme_override_font_sizes/font_size = 22
 text = "Текстовый квест"
 horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="ChoicesContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1696463345]
-custom_minimum_size = Vector2(50, 50)
+[node name="CloseButton" type="Button" parent="CenterContainer/QuestPanel/MarginContainer/VBoxContainer/HeaderRow" unique_id=1430802375]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-alignment = 1
-
-[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer" unique_id=2130462339]
-custom_minimum_size = Vector2(400, 400)
-layout_mode = 2
-
-[node name="StoryLabel" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer" unique_id=493677406]
-custom_minimum_size = Vector2(400, 400)
-layout_mode = 2
-text = " какой-нибудь тестовый текст не важно какой, лиш бы отображался"
-autowrap_mode = 2
-
-[node name="CloseButton" type="Button" parent="." unique_id=1430802375]
-layout_mode = 0
-offset_left = 272.0
-offset_top = -131.0
-offset_right = 357.0
-offset_bottom = -100.0
+size_flags_horizontal = 6
+size_flags_stretch_ratio = 1.09
+theme_override_colors/font_color = Color(0.61763585, 0.93683845, 0.9845846, 1)
+theme_override_colors/font_focus_color = Color(0.1748687, 0.56632197, 0.56921995, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.9415733, 0.9315263, 1)
+theme_override_font_sizes/font_size = 18
 text = "Закрыть
 "
 
-[connection signal="pressed" from="CloseButton" to="." method="_on_close_button_pressed"]
+[node name="HSeparator" type="HSeparator" parent="CenterContainer/QuestPanel/MarginContainer/VBoxContainer" unique_id=971656254]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="CenterContainer/QuestPanel/MarginContainer/VBoxContainer" unique_id=2130462339]
+custom_minimum_size = Vector2(500, 450)
+layout_mode = 2
+
+[node name="StoryLabel" type="Label" parent="CenterContainer/QuestPanel/MarginContainer/VBoxContainer/ScrollContainer" unique_id=493677406]
+custom_minimum_size = Vector2(800, 400)
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 6
+text = "      Какой-нибудь тестовый текст не важно какой, лиш бы правильно отображался и желательно весь влазил в слой.
+   Для этого напишем сюда еще что нибудь. Ехал Грека через реку, рак за руку Греку хуяк, и нету рака, ибо нехер тут!"
+autowrap_mode = 2
+
+[node name="HSeparator2" type="HSeparator" parent="CenterContainer/QuestPanel/MarginContainer/VBoxContainer" unique_id=1483467847]
+layout_mode = 2
+
+[node name="ChoicesContainer" type="VBoxContainer" parent="CenterContainer/QuestPanel/MarginContainer/VBoxContainer" unique_id=1696463345]
+custom_minimum_size = Vector2(50, 100)
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[connection signal="pressed" from="CenterContainer/QuestPanel/MarginContainer/VBoxContainer/HeaderRow/CloseButton" to="." method="_on_close_button_pressed"]
