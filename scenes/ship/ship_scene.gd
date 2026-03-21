@@ -13,15 +13,15 @@ extends Control
 # - quest: путь к JSON-файлу текстового квеста
 var adventures = [
 	{
-		"background": "res://assets/backgrounds/space/space_1.jpg",
+		"background": "res://assets/backgrounds/space/cosmo 6.jpg",
 		"quest": "res://data/quests/quest_signal.json"
 	},
 	{
-		"background": "res://assets/backgrounds/space/space_2.jpg",
+		"background": "res://assets/backgrounds/space/cosmo 7.jpg",
 		"quest": "res://data/quests/quest_derelict.json"
 	},
 	{
-		"background": "res://assets/backgrounds/space/space_3.jpg",
+		"background": "res://assets/backgrounds/space/cosmo 21.jpg",
 		"quest": "res://data/quests/quest_smugglers.json"
 	}
 ]

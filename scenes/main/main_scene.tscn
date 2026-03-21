@@ -4,22 +4,53 @@
 
 [node name="MainScene" type="Control" unique_id=510594631]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 3.0
+offset_bottom = 3.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_dv3lr")
 
-[node name="TextureRect" type="TextureRect" parent="." unique_id=1460882025]
-layout_mode = 0
-offset_right = 1155.0
-offset_bottom = 650.0
+[node name="BackgroundHolder" type="Control" parent="." unique_id=335625877]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = 7.0
+offset_bottom = 7.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackgroundTexture" type="TextureRect" parent="BackgroundHolder" unique_id=1460882025]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -3.0
+offset_right = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch_mode = 6
+
+[node name="FadeOverlay" type="ColorRect" parent="." unique_id=1665390719]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
 
 [node name="TitleLabel" type="Label" parent="." unique_id=96433778]
 layout_mode = 0
-offset_left = 192.0
-offset_top = 56.0
-offset_right = 1216.0
-offset_bottom = 592.0
+offset_left = 439.0
+offset_top = 66.0
+offset_right = 1463.0
+offset_bottom = 602.0
 theme_override_colors/font_color = Color(0.64060575, 0.6473212, 0.7758809, 1)
 theme_override_font_sizes/font_size = 30
 text = "Дом в пустоте"
@@ -28,18 +59,18 @@ vertical_alignment = 1
 
 [node name="FlyButton" type="Button" parent="." unique_id=507104556]
 layout_mode = 0
-offset_left = 640.0
-offset_top = 648.0
-offset_right = 768.0
-offset_bottom = 704.0
+offset_left = 884.0
+offset_top = 686.0
+offset_right = 1012.0
+offset_bottom = 742.0
 text = "В полет!"
 
 [node name="ExitButton" type="Button" parent="." unique_id=1225360141]
 layout_mode = 0
-offset_left = 640.0
-offset_top = 768.0
-offset_right = 768.0
-offset_bottom = 824.0
+offset_left = 884.0
+offset_top = 813.0
+offset_right = 1012.0
+offset_bottom = 869.0
 text = "Выход"
 
 [connection signal="pressed" from="FlyButton" to="." method="_on_fly_button_pressed"]
