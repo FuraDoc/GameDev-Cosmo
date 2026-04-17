@@ -1,0 +1,100 @@
+[gd_scene format=3 uid="uid://dhfxb3ycqjrm0"]
+
+[ext_resource type="Texture2D" uid="uid://cr45u28xmfkkb" path="res://assets/backgrounds/equip/equip_background.png" id="1_3p4rq"]
+[ext_resource type="Script" uid="uid://c50a7j3s5m23o" path="res://scripts/ui/cargo_equipment_panel.gd" id="1_6v5od"]
+[ext_resource type="Texture2D" uid="uid://c3ghtsten8m7a" path="res://assets/items/equipment/rescue_suit.png" id="3_y71vt"]
+[ext_resource type="Texture2D" uid="uid://b6x5lt81c8s85" path="res://assets/items/equipment/ar_visor.png" id="4_kbkby"]
+[ext_resource type="Texture2D" uid="uid://dndqvhh0omybv" path="res://assets/items/equipment/wave_drone.png" id="5_18cgf"]
+[ext_resource type="Texture2D" uid="uid://c4skp6tnq03cr" path="res://assets/items/equipment/analytic_resonator.png" id="6_6jyfl"]
+[ext_resource type="Texture2D" uid="uid://dsqad2wyc452d" path="res://assets/items/equipment/smart_metal_container.png" id="7_ut5kv"]
+
+[node name="CargoEquipmentPanel" type="Control" unique_id=701867251]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_6v5od")
+
+[node name="StandBackground" type="TextureRect" parent="." unique_id=642469135]
+custom_minimum_size = Vector2(1900, 1000)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("1_3p4rq")
+
+[node name="RescueSuitItem" type="TextureRect" parent="." unique_id=631808655]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.021000002
+anchor_bottom = 0.037
+offset_left = 666.0
+offset_top = 161.0
+offset_right = 921.68
+offset_bottom = 544.04
+mouse_filter = 0
+texture = ExtResource("3_y71vt")
+expand_mode = 1
+
+[node name="ArVisorItem" type="TextureRect" parent="." unique_id=465103482]
+layout_mode = 0
+offset_left = 331.0
+offset_top = 162.0
+offset_right = 481.0
+offset_bottom = 269.0
+mouse_filter = 0
+texture = ExtResource("4_kbkby")
+expand_mode = 1
+
+[node name="WaveDroneItem" type="TextureRect" parent="." unique_id=1487344419]
+layout_mode = 0
+offset_left = 546.0
+offset_top = 239.0
+offset_right = 652.0
+offset_bottom = 337.0
+mouse_filter = 0
+texture = ExtResource("5_18cgf")
+expand_mode = 1
+
+[node name="AnalyticResonatorItem" type="TextureRect" parent="." unique_id=1445837865]
+layout_mode = 1
+anchors_preset = -1
+offset_left = 460.0
+offset_top = 419.0
+offset_right = 696.0
+offset_bottom = 553.0
+mouse_filter = 0
+texture = ExtResource("6_6jyfl")
+expand_mode = 1
+
+[node name="SmartMetalContainerItem" type="TextureRect" parent="." unique_id=1431592195]
+layout_mode = 0
+offset_left = 327.0
+offset_top = 354.0
+offset_right = 451.0
+offset_bottom = 468.0
+mouse_filter = 0
+texture = ExtResource("7_ut5kv")
+expand_mode = 1
+
+[node name="TooltipPanel" type="Panel" parent="." unique_id=1012778687]
+layout_mode = 1
+offset_left = 964.0
+offset_top = 147.0
+offset_right = 1358.0
+offset_bottom = 562.0
+
+[node name="TooltipLabel" type="RichTextLabel" parent="TooltipPanel" unique_id=345787868]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1.0
+offset_right = 1.0
+grow_horizontal = 2
+grow_vertical = 2

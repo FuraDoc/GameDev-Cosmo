@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://bwm82nkdsedwo"]
+
+[ext_resource type="Script" uid="uid://clqkbjc8cvrhj" path="res://resources/item_data.gd" id="1_4oxx6"]
+[ext_resource type="Texture2D" uid="uid://dsqad2wyc452d" path="res://assets/items/smart_metal_container.png" id="1_16is4"]
+
+[resource]
+script = ExtResource("1_4oxx6")
+item_id = "smart_metal_container"
+title = "Контейнер с умным металлом"
+description = "Поясной контейнер с программируемой металлической массой.
+
+Позволяет быстро формировать заранее заданные инструменты и простые защитные конструкции: лом, шест, нож, молот, щит и другие заготовленные формы.
+Применение:
+
+вскрытие и поддевание;
+расчистка;
+упор, рычаг, распорка;
+самозащита;
+создание временного щита или инструмента под ситуацию"
+equipment_texture = ExtResource("1_16is4")
+metadata/_custom_type_script = "uid://clqkbjc8cvrhj"

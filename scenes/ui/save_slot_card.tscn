@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://bxd0lum8nqddu"]
+
+[ext_resource type="Script" uid="uid://l4131ltvkvdp" path="res://scripts/ui/save_slot_card.gd" id="1_qacqr"]
+[ext_resource type="Texture2D" uid="uid://bo0b23wuk7hkw" path="res://assets/backgrounds/equip/save_background.png" id="2_75tmn"]
+
+[node name="SaveSlotCard" type="Control" unique_id=1808743793]
+custom_minimum_size = Vector2(450, 450)
+layout_mode = 3
+anchors_preset = 0
+offset_left = 100.0
+offset_top = 100.0
+offset_right = 550.0
+offset_bottom = 550.0
+script = ExtResource("1_qacqr")
+
+[node name="PanelBackground" type="TextureRect" parent="." unique_id=2129957495]
+layout_mode = 0
+offset_left = -46.0
+offset_top = -67.0
+offset_right = 424.0
+offset_bottom = 521.0
+texture = ExtResource("2_75tmn")
+
+[node name="ContentMargin" type="MarginContainer" parent="." unique_id=726251116]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = -16.0
+offset_right = -80.0
+offset_bottom = -72.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBox" type="VBoxContainer" parent="ContentMargin" unique_id=69338192]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="SlotTitleLabel" type="Label" parent="ContentMargin/VBox" unique_id=201078954]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="ContentMargin/VBox" unique_id=462592405]
+layout_mode = 2
+
+[node name="PilotNameLabel" type="Label" parent="ContentMargin/VBox" unique_id=2103675034]
+layout_mode = 2
+
+[node name="LocationLabel" type="Label" parent="ContentMargin/VBox" unique_id=590748485]
+layout_mode = 2
+
+[node name="ProgressLabel" type="Label" parent="ContentMargin/VBox" unique_id=33088061]
+layout_mode = 2
+
+[node name="TimeLabel" type="Label" parent="ContentMargin/VBox" unique_id=1464737944]
+layout_mode = 2
+
+[node name="NamePromptLabel" type="Label" parent="ContentMargin/VBox" unique_id=1121988046]
+layout_mode = 2
+
+[node name="NameLineEdit" type="LineEdit" parent="ContentMargin/VBox" unique_id=550222098]
+layout_mode = 2
+
+[node name="ActionButton" type="Button" parent="ContentMargin/VBox" unique_id=2011438759]
+layout_mode = 2
+text = "Начать игру"

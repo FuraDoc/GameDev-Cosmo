@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://3rmmrypqff6x"]
+
+[ext_resource type="Texture2D" uid="uid://dndqvhh0omybv" path="res://assets/items/wave_drone.png" id="1_7glw5"]
+[ext_resource type="Script" uid="uid://clqkbjc8cvrhj" path="res://resources/item_data.gd" id="1_8mdpc"]
+
+[resource]
+script = ExtResource("1_8mdpc")
+item_id = "wave_drone"
+title = "Волновой дрон-ассистент"
+description = "Компактный автономный дрон для разведки и первичного ксеноанализа.
+
+Может обследовать опасные зоны на расстоянии и подсказывать способы безопасного взаимодействия с неизвестными формами жизни.
+Применение:
+
+разведка недоступных мест;
+дистанционный осмотр;
+анализ биосигналов;
+советы при контакте;
+распознавание паттернов поведения и сигналов."
+equipment_texture = ExtResource("1_7glw5")
+metadata/_custom_type_script = "uid://clqkbjc8cvrhj"

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://x6hn51slmol7"]
+
+[ext_resource type="Texture2D" uid="uid://c3ghtsten8m7a" path="res://assets/items/rescue_suit.png" id="1_fjge8"]
+[ext_resource type="Script" uid="uid://clqkbjc8cvrhj" path="res://resources/item_data.gd" id="1_o4281"]
+
+[resource]
+script = ExtResource("1_o4281")
+item_id = "rescue_suit"
+title = "Экранированный защитный костюм спасателя"
+description = "Защитный костюм для вылазок в опасную среду.
+
+Оснащён встроенной подсветкой и правым наручным плазменным резаком для аварийных работ.
+Применение:
+
+проход через опасные зоны;
+защита от среды;
+освещение тёмных участков;
+разрезание тонких перегородок, креплений, завалов;
+отпугивание мелких угроз.
+"
+equipment_texture = ExtResource("1_fjge8")
+metadata/_custom_type_script = "uid://clqkbjc8cvrhj"

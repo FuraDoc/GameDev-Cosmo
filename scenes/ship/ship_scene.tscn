@@ -1,8 +1,11 @@
 [gd_scene format=3 uid="uid://by4veolisifln"]
 
-[ext_resource type="Script" uid="uid://dklebupg1hv5v" path="res://scenes/ship/ship_scene.gd" id="1_kfcrm"]
-[ext_resource type="Texture2D" uid="uid://cd0e0l1frmp0m" path="res://assets/backgrounds/space/cosmo 16.jpg" id="2_4i47n"]
-[ext_resource type="Texture2D" uid="uid://c1h76btlgfx4d" path="res://assets/cockpits/cockpit 2.2.png" id="3_4i47n"]
+[ext_resource type="Script" uid="uid://dklebupg1hv5v" path="res://scripts/ship/ship_scene.gd" id="1_kfcrm"]
+[ext_resource type="Texture2D" uid="uid://booanby78vh1" path="res://assets/cockpits/cockpit ultrawide clear 1.02.png" id="2_4i47n"]
+[ext_resource type="Script" uid="uid://64071pcmu1gd" path="res://scripts/ship/ship_view_controller.gd" id="2_sc7ko"]
+[ext_resource type="Texture2D" uid="uid://ce3b2x67bc6xi" path="res://assets/cockpits/cockpit ultrawide panel 1.10.png" id="3_si18b"]
+[ext_resource type="Script" uid="uid://bc5ta2vxtye03" path="res://scripts/ship/ship_adventure_controller.gd" id="5_0kj58"]
+[ext_resource type="Script" uid="uid://dfxl27uffxcvk" path="res://scripts/ship/ship_ui_controller.gd" id="6_rh4qo"]
 
 [node name="ShipScene" type="Control" unique_id=184082764]
 layout_mode = 3
@@ -14,69 +17,128 @@ grow_vertical = 2
 script = ExtResource("1_kfcrm")
 metadata/_edit_horizontal_guides_ = [-206.0]
 
-[node name="SpaceView" type="TextureRect" parent="." unique_id=167359381]
+[node name="ViewportRoot" type="Control" parent="." unique_id=1191224313]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_sc7ko")
+
+[node name="SpaceLayer" type="TextureRect" parent="ViewportRoot" unique_id=167359381]
 layout_mode = 0
-offset_left = 182.0
-offset_top = -83.0
-offset_right = 1664.0
-offset_bottom = 741.0
+mouse_filter = 2
+expand_mode = 1
+
+[node name="CockpitLayer" type="TextureRect" parent="ViewportRoot" unique_id=792153040]
+layout_mode = 1
+offset_right = 154.0
+offset_bottom = 122.0
+mouse_filter = 2
 texture = ExtResource("2_4i47n")
 expand_mode = 1
 
-[node name="Cockpit" type="TextureRect" parent="." unique_id=792153040]
+[node name="HardwareLayer" type="Control" parent="ViewportRoot" unique_id=1571525598]
 layout_mode = 1
-anchors_preset = -1
-anchor_right = 11.200001
-anchor_bottom = 9.8
-offset_left = -35.0
-offset_top = -35.0
-offset_right = -19545.002
-offset_bottom = -9463.0
-texture = ExtResource("3_4i47n")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="InteriorLayer" type="Control" parent="ViewportRoot" unique_id=964270017]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="PetLayer" type="Control" parent="ViewportRoot" unique_id=925188588]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="PanelLayer" type="TextureRect" parent="ViewportRoot" unique_id=2002599282]
+visible = false
+layout_mode = 1
+offset_left = 338.0
+offset_top = 391.0
+offset_right = 1600.0
+offset_bottom = 1142.0
+mouse_filter = 2
+texture = ExtResource("3_si18b")
 expand_mode = 1
 
-[node name="MenuButton" type="Button" parent="." unique_id=1568691328]
-layout_mode = 0
-offset_left = 1731.0
-offset_top = 27.0
-offset_right = 1883.0
-offset_bottom = 91.0
-text = "В меню
-"
-
-[node name="TextQuestButton" type="Button" parent="." unique_id=1405644217]
-layout_mode = 1
-anchors_preset = -1
-anchor_top = 0.008
-anchor_right = 0.039
-anchor_bottom = 0.008
-offset_left = 50.0
-offset_top = 24.36
-offset_right = 167.4
-offset_bottom = 77.36
-text = "Текстовый квест"
-
-[node name="NextAdventureButton" type="Button" parent="." unique_id=928407270]
-layout_mode = 0
-offset_left = 873.0
-offset_top = 533.0
-offset_right = 1054.0
-offset_bottom = 673.0
-text = "Новое приключение!"
+[node name="AdventureController" type="Node" parent="." unique_id=1978797079]
+script = ExtResource("5_0kj58")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=972611634]
+script = ExtResource("6_rh4qo")
 
 [node name="FadeOverlay" type="ColorRect" parent="UI" unique_id=233783091]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 4.0
-offset_right = 4.0
+offset_left = -16.0
+offset_top = -13.0
+offset_right = 18.0
+offset_bottom = 14.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0)
 
-[connection signal="pressed" from="MenuButton" to="." method="_on_menu_button_pressed"]
-[connection signal="pressed" from="TextQuestButton" to="." method="_on_text_quest_button_pressed"]
-[connection signal="pressed" from="NextAdventureButton" to="." method="_on_next_adventure_button_pressed"]
+[node name="ButtonsRoot" type="Control" parent="UI" unique_id=493751872]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 182.0
+offset_bottom = 152.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/ButtonsRoot" unique_id=258532484]
+layout_mode = 0
+offset_right = 181.0
+offset_bottom = 150.0
+
+[node name="TextQuestButton" type="Button" parent="UI/ButtonsRoot/VBoxContainer" unique_id=1405644217]
+layout_mode = 2
+text = "Квест"
+
+[node name="ContinueQuestButton" type="Button" parent="UI/ButtonsRoot/VBoxContainer" unique_id=1470507953]
+layout_mode = 2
+text = "Продолжить квест"
+
+[node name="NextAdventureButton" type="Button" parent="UI/ButtonsRoot/VBoxContainer" unique_id=928407270]
+layout_mode = 2
+text = "Новое приключение!"
+
+[node name="MenuButton" type="Button" parent="UI/ButtonsRoot/VBoxContainer" unique_id=1568691328]
+layout_mode = 2
+text = "В меню
+"
+
+[node name="CargoBayButton" type="Button" parent="UI/ButtonsRoot/VBoxContainer" unique_id=167719655]
+layout_mode = 2
+text = "Грузовой отсек"
+
+[node name="WindowsRoot" type="Control" parent="UI" unique_id=1576734944]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[connection signal="pressed" from="UI/ButtonsRoot/VBoxContainer/TextQuestButton" to="." method="_on_text_quest_button_pressed"]
+[connection signal="pressed" from="UI/ButtonsRoot/VBoxContainer/ContinueQuestButton" to="UI" method="_on_continue_quest_button_pressed"]
+[connection signal="pressed" from="UI/ButtonsRoot/VBoxContainer/NextAdventureButton" to="." method="_on_next_adventure_button_pressed"]
+[connection signal="pressed" from="UI/ButtonsRoot/VBoxContainer/MenuButton" to="." method="_on_menu_button_pressed"]
+[connection signal="pressed" from="UI/ButtonsRoot/VBoxContainer/CargoBayButton" to="UI" method="_on_cargo_bay_button_pressed"]

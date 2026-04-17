@@ -1,42 +1,30 @@
 [gd_scene format=3 uid="uid://cf2phlkq76e6o"]
 
-[ext_resource type="Script" uid="uid://bvq42txcxm0j5" path="res://scenes/main/main_scene.gd" id="1_dv3lr"]
+[ext_resource type="Script" uid="uid://bvq42txcxm0j5" path="res://scripts/main/main_scene.gd" id="1_dv3lr"]
+[ext_resource type="Texture2D" uid="uid://bu8w3hk8qvd3s" path="res://assets/backgrounds/space/ship-frontwiew.jpg" id="2_ei2sf"]
 
 [node name="MainScene" type="Control" unique_id=510594631]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 3.0
-offset_bottom = 3.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_dv3lr")
 
-[node name="BackgroundHolder" type="Control" parent="." unique_id=335625877]
+[node name="BackgroundTexture" type="TextureRect" parent="." unique_id=1460882025]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 7.0
-offset_top = 7.0
-offset_right = 7.0
-offset_bottom = 7.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="BackgroundTexture" type="TextureRect" parent="BackgroundHolder" unique_id=1460882025]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -3.0
-offset_right = -3.0
-grow_horizontal = 2
-grow_vertical = 2
+texture = ExtResource("2_ei2sf")
+expand_mode = 1
 stretch_mode = 6
 
-[node name="FadeOverlay" type="ColorRect" parent="." unique_id=1665390719]
+[node name="FadeOverlay" type="ColorRect" parent="." unique_id=979597864]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -45,33 +33,93 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 1)
 
-[node name="TitleLabel" type="Label" parent="." unique_id=96433778]
-layout_mode = 0
-offset_left = 439.0
-offset_top = 66.0
-offset_right = 1463.0
-offset_bottom = 602.0
+[node name="Overlay" type="ColorRect" parent="." unique_id=345514485]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.09803922)
+
+[node name="UI" type="MarginContainer" parent="." unique_id=777913041]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 80
+theme_override_constants/margin_top = 60
+theme_override_constants/margin_right = 80
+theme_override_constants/margin_bottom = 60
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI" unique_id=1438449283]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="SpacerTop" type="Control" parent="UI/VBoxContainer" unique_id=368189350]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="UI/VBoxContainer" unique_id=96433778]
+layout_mode = 2
 theme_override_colors/font_color = Color(0.64060575, 0.6473212, 0.7758809, 1)
-theme_override_font_sizes/font_size = 30
-text = "Дом в пустоте"
+theme_override_font_sizes/font_size = 60
+text = "COSMOQUEST"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="FlyButton" type="Button" parent="." unique_id=507104556]
-layout_mode = 0
-offset_left = 884.0
-offset_top = 686.0
-offset_right = 1012.0
-offset_bottom = 742.0
-text = "В полет!"
+[node name="SubtitleLabel" type="Label" parent="UI/VBoxContainer" unique_id=1752574361]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.821064, 0.8229545, 0.95702666, 1)
+theme_override_font_sizes/font_size = 26
+text = "Приключения ждут тебя!"
+horizontal_alignment = 1
 
-[node name="ExitButton" type="Button" parent="." unique_id=1225360141]
-layout_mode = 0
-offset_left = 884.0
-offset_top = 813.0
-offset_right = 1012.0
-offset_bottom = 869.0
+[node name="SpacerMid" type="Control" parent="UI/VBoxContainer" unique_id=924702454]
+layout_mode = 2
+
+[node name="MenuPanel" type="PanelContainer" parent="UI/VBoxContainer" unique_id=1180008678]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 10
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/VBoxContainer/MenuPanel" unique_id=356194995]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="ButtonsContainer" type="VBoxContainer" parent="UI/VBoxContainer/MenuPanel/MarginContainer" unique_id=118749246]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="NewGameButton" type="Button" parent="UI/VBoxContainer/MenuPanel/MarginContainer/ButtonsContainer" unique_id=34737539]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Новая игра
+"
+
+[node name="ContinueButton" type="Button" parent="UI/VBoxContainer/MenuPanel/MarginContainer/ButtonsContainer" unique_id=889911111]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Продолжить"
+
+[node name="SettingsButton" type="Button" parent="UI/VBoxContainer/MenuPanel/MarginContainer/ButtonsContainer" unique_id=1273738538]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Настройки"
+
+[node name="ExitButton" type="Button" parent="UI/VBoxContainer/MenuPanel/MarginContainer/ButtonsContainer" unique_id=1410055360]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
 text = "Выход"
 
-[connection signal="pressed" from="FlyButton" to="." method="_on_fly_button_pressed"]
-[connection signal="pressed" from="ExitButton" to="." method="_on_exit_button_pressed"]
+[node name="SpacerBottom" type="Control" parent="UI/VBoxContainer" unique_id=821927142]
+layout_mode = 2

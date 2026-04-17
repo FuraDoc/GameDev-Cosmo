@@ -13,10 +13,15 @@ config_version=5
 config/name="Астронавт"
 run/main_scene="uid://cf2phlkq76e6o"
 config/features=PackedStringArray("4.6", "Mobile")
-config/icon="res://icon.svg"
+boot_splash/bg_color=Color(0, 0, 0, 1)
+boot_splash/show_image=false
 
 [autoload]
 
+ItemDatabase="*uid://b8oqucladwph"
+PlayerState="*uid://bys734ay40avv"
+QuestRuntime="*uid://hcjm88o37fis"
+SaveManager="*uid://6uywycxgppkw"
 Dialogic="*uid://ds2q0uclmolvu"
 
 [dialogic]
@@ -32,7 +37,7 @@ window/size/viewport_height=1080
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/dialogic/plugin.cfg")
+enabled=PackedStringArray("res://addons/dialogic/plugin.cfg", "res://addons/godot_mcp/plugin.cfg")
 
 [input]
 

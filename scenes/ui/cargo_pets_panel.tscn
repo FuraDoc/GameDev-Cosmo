@@ -1,0 +1,89 @@
+[gd_scene format=3 uid="uid://qhqxt17qavkf"]
+
+[ext_resource type="Script" uid="uid://csm2hrblmlkj8" path="res://scripts/ui/cargo_pets_panel.gd" id="1_bk7uh"]
+[ext_resource type="Texture2D" uid="uid://jjja3n2nwmra" path="res://assets/backgrounds/equip/Background_pets.jpg" id="2_1j2ru"]
+[ext_resource type="Texture2D" uid="uid://b5s2ghavdnb21" path="res://assets/items/pets/capsula blue.png" id="3_1j2ru"]
+[ext_resource type="Texture2D" uid="uid://dcb8wbvrmnwlu" path="res://assets/items/pets/cat capsule.png" id="3_bk7uh"]
+[ext_resource type="Texture2D" uid="uid://chvlfn1dqv6h4" path="res://assets/items/pets/crab_station.png" id="4_iwlgj"]
+
+[node name="CargoPetsPanel" type="Control" unique_id=1103402445]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_bk7uh")
+
+[node name="StorageBackground" type="TextureRect" parent="." unique_id=1599480133]
+custom_minimum_size = Vector2(1000, 600)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_1j2ru")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="AlienJellyCapsule" type="TextureRect" parent="." unique_id=1115228760]
+layout_mode = 0
+offset_left = 300.0
+offset_top = 217.0
+offset_right = 641.0
+offset_bottom = 617.0
+texture = ExtResource("3_1j2ru")
+expand_mode = 1
+
+[node name="MartaCatCapsule" type="TextureRect" parent="." unique_id=2064017861]
+layout_mode = 0
+offset_left = 655.0
+offset_top = 345.0
+offset_right = 1028.0
+offset_bottom = 603.0
+texture = ExtResource("3_bk7uh")
+expand_mode = 1
+
+[node name="RoboCrabCapsule" type="TextureRect" parent="." unique_id=1520275707]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1039.0
+offset_top = 297.0
+offset_right = -258.0
+offset_bottom = -126.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_iwlgj")
+expand_mode = 1
+
+[node name="BottomInfoContainer" type="TextureRect" parent="." unique_id=1671645608]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TooltipPanel" type="Panel" parent="BottomInfoContainer" unique_id=1076112028]
+layout_mode = 0
+offset_left = 237.0
+offset_top = 49.0
+offset_right = 862.0
+offset_bottom = 243.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BottomInfoContainer/TooltipPanel" unique_id=1332489750]
+layout_mode = 0
+offset_right = 623.0
+offset_bottom = 89.0
+
+[node name="PetNameLabel" type="Label" parent="BottomInfoContainer/TooltipPanel/VBoxContainer" unique_id=1359705259]
+layout_mode = 2
+
+[node name="PetDescriptionLabel" type="Label" parent="BottomInfoContainer/TooltipPanel/VBoxContainer" unique_id=1993148739]
+layout_mode = 2
+
+[node name="PetHistoryLabel" type="Label" parent="BottomInfoContainer/TooltipPanel/VBoxContainer" unique_id=422261238]
+layout_mode = 2
+
+[node name="ActionButton" type="Button" parent="BottomInfoContainer/TooltipPanel/VBoxContainer" unique_id=1210083036]
+layout_mode = 2
