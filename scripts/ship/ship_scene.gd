@@ -15,6 +15,7 @@ extends Control
 @onready var ui_controller = $UI
 
 var is_transitioning := false
+var is_periscope_transitioning := false
 
 var cargo_bay_popup_scene = preload("res://scenes/ui/cargo_bay_popup.tscn")
 
@@ -23,6 +24,25 @@ func _ready():
 	connect_ui_signals()
 	show_current_adventure()
 	setup_current_adventure_quest_state()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not (event is InputEventKey):
+		return
+
+	var key_event := event as InputEventKey
+
+	if not key_event.pressed or key_event.echo:
+		return
+
+	if key_event.keycode != KEY_SPACE:
+		return
+
+	if is_transitioning or is_periscope_transitioning:
+		return
+
+	get_viewport().set_input_as_handled()
+	toggle_periscope_mode()
 
 
 func connect_ui_signals() -> void:
@@ -131,3 +151,29 @@ func _confirm_and_start_next_adventure() -> void:
 	await ui_controller.play_fade_in()
 	
 	is_transitioning = false
+
+
+func toggle_periscope_mode() -> void:
+	if is_periscope_transitioning:
+		return
+
+	is_periscope_transitioning = true
+	ui_controller.set_main_buttons_enabled(false)
+
+	await ui_controller.fade_to(1.0, 0.5)
+
+	if view_controller.is_periscope_active():
+		view_controller.set_periscope_active(false)
+		ui_controller.set_ship_hud_visible(true)
+		ui_controller.set_main_buttons_enabled(true)
+	else:
+		ui_controller.set_ship_hud_visible(false)
+		view_controller.set_periscope_active(true)
+
+	await ui_controller.fade_to(0.0, 0.5)
+
+	if not view_controller.is_periscope_active():
+		ui_controller.set_ship_hud_visible(true)
+		ui_controller.set_main_buttons_enabled(true)
+
+	is_periscope_transitioning = false

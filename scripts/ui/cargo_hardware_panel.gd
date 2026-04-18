@@ -76,6 +76,16 @@ func _build_modules_data() -> void:
 			"icon_path": "res://assets/items/hardware/pic.module.front%03d.png" % i
 		}
 
+	for i in range(1, 9):
+		var panel_id := "module_panel_%03d" % i
+		modules_data[panel_id] = {
+			"id": panel_id,
+			"zone": "panel",
+			"title": "Передняя панель, модуль %d" % i,
+			"description": "Заменяет верхнюю переднюю панель кокпита на вариант %d." % i,
+			"icon_path": "res://assets/items/frontpanel/pic.frontpanel%03d.png" % i
+		}
+
 
 func _create_modules_grid() -> void:
 	item_nodes.clear()
@@ -109,6 +119,7 @@ func _create_modules_grid() -> void:
 	_create_zone_row("sleep", 0, left_margin, top_margin, cell_w, cell_h, row_gap, icon_size)
 	_create_zone_row("workzone", 1, left_margin, top_margin, cell_w, cell_h, row_gap, icon_size)
 	_create_zone_row("front", 2, left_margin, top_margin, cell_w, cell_h, row_gap, icon_size)
+	_create_zone_row("panel", 3, left_margin, top_margin, cell_w, cell_h, row_gap, icon_size)
 
 
 func _create_zone_row(
@@ -172,6 +183,8 @@ func _get_module_ids_for_zone(zone_id: String) -> Array[String]:
 				result.append("module_workzone_%03d" % i)
 			"front":
 				result.append("module_front_%03d" % i)
+			"panel":
+				result.append("module_panel_%03d" % i)
 
 	return result
 

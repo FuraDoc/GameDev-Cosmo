@@ -79,6 +79,7 @@ func _on_new_game_slot_confirmed(slot_id: int, pilot_name: String) -> void:
 	# Создаем новое сохранение в выбранном слоте.
 	# Пока без интро — сразу переходим в ship_scene.
 	SaveManager.create_new_game(slot_id, pilot_name)
+	PlayerState.apply_default_modules()
 	update_continue_button()
 	
 	get_tree().change_scene_to_file("res://scenes/ship/ship_scene.tscn")

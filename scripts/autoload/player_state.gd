@@ -26,7 +26,15 @@ var found_module_ids: Array[String] = []
 var active_modules := {
 	"sleep": "",
 	"workzone": "",
-	"front": ""
+	"front": "",
+	"panel": ""
+}
+
+const DEFAULT_ACTIVE_MODULES := {
+	"sleep": "module_sleep_001",
+	"workzone": "module_workzone_001",
+	"front": "module_front_001",
+	"panel": "module_panel_001"
 }
 
 
@@ -183,12 +191,30 @@ func clear_module(module_id: String, zone_id: String) -> void:
 		modules_changed.emit()
 
 
+func apply_default_modules(emit_signal: bool = true) -> void:
+	var changed := false
+
+	for zone_id in DEFAULT_ACTIVE_MODULES.keys():
+		var module_id: String = DEFAULT_ACTIVE_MODULES[zone_id]
+
+		if module_id not in found_module_ids:
+			add_found_module(module_id)
+
+		if active_modules.get(zone_id, "") != module_id:
+			active_modules[zone_id] = module_id
+			changed = true
+
+	if changed and emit_signal:
+		modules_changed.emit()
+
+
 func _ready():
 	if dev_give_all_items:
 		debug_give_all_items()
 		debug_give_all_interior_items()
 		debug_give_all_modules()
 		debug_give_all_pets()
+		apply_default_modules()
 
 
 func has_item(item_id: String) -> bool:
@@ -258,6 +284,9 @@ func debug_give_all_modules() -> void:
 
 	for i in range(1, 9):
 		add_found_module("module_front_%03d" % i)
+
+	for i in range(1, 9):
+		add_found_module("module_panel_%03d" % i)
 
 
 func debug_give_all_pets() -> void:

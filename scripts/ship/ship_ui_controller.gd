@@ -18,6 +18,7 @@ signal continue_quest_requested
 signal cargo_bay_requested
 
 @onready var fade_overlay = $FadeOverlay
+@onready var buttons_root = $ButtonsRoot
 
 @onready var text_quest_button = $ButtonsRoot/VBoxContainer/TextQuestButton
 @onready var continue_quest_button = $ButtonsRoot/VBoxContainer/ContinueQuestButton
@@ -169,3 +170,13 @@ func play_fade_in() -> void:
 	var tween = create_tween()
 	tween.tween_property(fade_overlay, "color:a", 0.0, 1.0)
 	await tween.finished
+
+
+func fade_to(alpha: float, duration: float) -> void:
+	var tween = create_tween()
+	tween.tween_property(fade_overlay, "color:a", alpha, duration)
+	await tween.finished
+
+
+func set_ship_hud_visible(visible: bool) -> void:
+	buttons_root.visible = visible

@@ -3,8 +3,8 @@ extends RefCounted
 
 var enabled := true
 
-var selected_layer := "module" # "interior" / "module" / "pet"
-var selected_item_id := "module_front_008"
+var selected_layer := "panel" # "interior" / "module" / "pet" / "panel"
+var selected_item_id := "module_panel_008"
 var selected_pet_zone := 0
 
 var move_step := 0.01
@@ -22,12 +22,14 @@ func handle_input(
 	module_layer_controller,
 	pet_layer_controller,
 	interior_visual_data: Dictionary,
+	panel_visual_data: Dictionary,
 	hardware_layer: Control,
 	pet_layer: Control,
 	cockpit_layer: Control,
 	cockpit_texture: Texture2D,
 	clear_layer_callable: Callable,
-	update_interior_layer_callable: Callable
+	update_interior_layer_callable: Callable,
+	update_panel_layer_callable: Callable
 ) -> void:
 	if not enabled:
 		return
@@ -63,11 +65,20 @@ func handle_input(
 		)
 		return
 
+	if selected_layer == "panel":
+		_handle_panel_input(
+			event,
+			panel_visual_data,
+			update_panel_layer_callable
+		)
+		return
+
 
 func print_selected_data(
 	module_layer_controller,
 	pet_layer_controller,
-	interior_visual_data: Dictionary
+	interior_visual_data: Dictionary,
+	panel_visual_data: Dictionary
 ) -> void:
 	print("----- DEBUG ITEM DATA -----")
 	print("Layer: ", selected_layer)
@@ -115,6 +126,19 @@ func print_selected_data(
 		print("\t\"texture_path\": \"", interior_data["texture_path"], "\",")
 		print("\t\"anchor_pos\": Vector2(", interior_data["anchor_pos"].x, ", ", interior_data["anchor_pos"].y, "),")
 		print("\t\"size_ratio\": Vector2(", interior_data["size_ratio"].x, ", ", interior_data["size_ratio"].y, ")")
+		print("}")
+		print("---------------------------")
+		return
+
+	if selected_layer == "panel":
+		if not panel_visual_data.has(selected_item_id):
+			return
+
+		var panel_data = panel_visual_data[selected_item_id]
+		print("\"", selected_item_id, "\": {")
+		print("\t\"texture_path\": \"", panel_data["texture_path"], "\",")
+		print("\t\"anchor_pos\": Vector2(", panel_data["anchor_pos"].x, ", ", panel_data["anchor_pos"].y, "),")
+		print("\t\"scale\": ", panel_data.get("scale", 1.0))
 		print("}")
 		print("---------------------------")
 
@@ -326,6 +350,60 @@ func _handle_interior_input(
 			"Updated [interior] ", selected_item_id,
 			" -> anchor_pos=", interior_visual_data[selected_item_id]["anchor_pos"],
 			" size_ratio=", interior_visual_data[selected_item_id]["size_ratio"]
+		)
+
+
+func _handle_panel_input(
+	event: InputEventKey,
+	panel_visual_data: Dictionary,
+	update_panel_layer_callable: Callable
+) -> void:
+	if not panel_visual_data.has(selected_item_id):
+		return
+
+	var current_move_step: float = move_step
+	var current_scale_step: float = scale_step
+
+	if event.shift_pressed:
+		current_move_step = move_step_fine
+		current_scale_step = scale_step_fine
+
+	var changed := false
+	var anchor_pos: Vector2 = panel_visual_data[selected_item_id]["anchor_pos"]
+	var scale_value: float = panel_visual_data[selected_item_id].get("scale", 1.0)
+
+	if event.keycode == KEY_LEFT:
+		anchor_pos.x -= current_move_step
+		changed = true
+	elif event.keycode == KEY_RIGHT:
+		anchor_pos.x += current_move_step
+		changed = true
+	elif event.keycode == KEY_UP:
+		anchor_pos.y -= current_move_step
+		changed = true
+	elif event.keycode == KEY_DOWN:
+		anchor_pos.y += current_move_step
+		changed = true
+	elif event.keycode == KEY_BRACKETLEFT:
+		scale_value *= (1.0 / current_scale_step)
+		changed = true
+	elif event.keycode == KEY_BRACKETRIGHT:
+		scale_value *= current_scale_step
+		changed = true
+
+	anchor_pos.x = clamp(anchor_pos.x, 0.0, 1.0)
+	anchor_pos.y = clamp(anchor_pos.y, 0.0, 1.2)
+	scale_value = clamp(scale_value, 0.01, 10.0)
+
+	panel_visual_data[selected_item_id]["anchor_pos"] = anchor_pos
+	panel_visual_data[selected_item_id]["scale"] = scale_value
+
+	if changed:
+		update_panel_layer_callable.call()
+		print(
+			"Updated [panel] ", selected_item_id,
+			" -> anchor_pos=", panel_visual_data[selected_item_id]["anchor_pos"],
+			" scale=", panel_visual_data[selected_item_id]["scale"]
 		)
 
 
