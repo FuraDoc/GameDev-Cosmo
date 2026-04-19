@@ -2,70 +2,81 @@ extends Control
 
 signal popup_closed
 
-@onready var title_label = $CenterContainer/Panel/MarginContainer/VBoxContainer/TitleLabel
+# --- Узлы сцены ---
+@onready var title_label: Label = $CenterContainer/Panel/MarginContainer/VBoxContainer/TitleLabel
 
-@onready var equipment_button = $CenterContainer/Panel/MarginContainer/VBoxContainer/ButtonsRow/EquipmentButton
-@onready var interior_button = $CenterContainer/Panel/MarginContainer/VBoxContainer/ButtonsRow/InteriorButton
-@onready var hardware_button = $CenterContainer/Panel/MarginContainer/VBoxContainer/ButtonsRow/HardwareButton
-@onready var pets_button = $CenterContainer/Panel/MarginContainer/VBoxContainer/ButtonsRow/PetsButton
+@onready var equipment_button: Button = $CenterContainer/Panel/MarginContainer/VBoxContainer/ButtonsRow/EquipmentButton
+@onready var interior_button: Button = $CenterContainer/Panel/MarginContainer/VBoxContainer/ButtonsRow/InteriorButton
+@onready var hardware_button: Button = $CenterContainer/Panel/MarginContainer/VBoxContainer/ButtonsRow/HardwareButton
+@onready var pets_button: Button = $CenterContainer/Panel/MarginContainer/VBoxContainer/ButtonsRow/PetsButton
 
-@onready var section_background = $CenterContainer/Panel/MarginContainer/VBoxContainer/ContentArea/SectionBackground
-@onready var content_root = $CenterContainer/Panel/MarginContainer/VBoxContainer/ContentArea/ContentLayer/ContentRoot
+@onready var section_background: TextureRect = $CenterContainer/Panel/MarginContainer/VBoxContainer/ContentArea/SectionBackground
+@onready var content_root: Control = $CenterContainer/Panel/MarginContainer/VBoxContainer/ContentArea/ContentLayer/ContentRoot
 
-@onready var close_button = $CenterContainer/Panel/MarginContainer/VBoxContainer/CloseButton
+@onready var close_button: Button = $CenterContainer/Panel/MarginContainer/VBoxContainer/CloseButton
 
+# --- Текущая активная секция ---
 var current_section: String = "equipment"
 
-var cargo_equipment_panel_scene = preload("res://scenes/ui/cargo_equipment_panel.tscn")
-var cargo_interior_panel_scene = preload("res://scenes/ui/cargo_interior_panel.tscn")
-var cargo_hardware_panel_scene = preload("res://scenes/ui/cargo_hardware_panel.tscn")
-var cargo_pets_panel_scene = preload("res://scenes/ui/cargo_pets_panel.tscn")
+# --- Словарь: id секции → сцена панели контента ---
+# Если для секции нет сцены — будет показан placeholder-текст
+const SECTION_SCENES := {
+	"equipment": preload("res://scenes/ui/cargo_equipment_panel.tscn"),
+	"interior":  preload("res://scenes/ui/cargo_interior_panel.tscn"),
+	"hardware":  preload("res://scenes/ui/cargo_hardware_panel.tscn"),
+	"pets":      preload("res://scenes/ui/cargo_pets_panel.tscn"),
+}
 
+# --- Словарь: id секции → заголовок окна ---
+const SECTION_TITLES := {
+	"equipment": "Грузовой отсек — Снаряжение",
+	"interior":  "Грузовой отсек — Интерьер",
+	"hardware":  "Грузовой отсек — Модули",
+	"pets":      "Грузовой отсек — Питомцы",
+}
 
+# --- Словарь: id секции → путь к фоновой текстуре (пустая строка = нет фона) ---
+# load() используется намеренно: фоны могут меняться динамически или отсутствовать
 var backgrounds := {
 	"equipment": "",
-	"interior": "",
-	"hardware": "",
-	"pets": ""
+	"interior":  "",
+	"hardware":  "",
+	"pets":      "",
 }
 
 
 func _ready() -> void:
+	# Растягиваем на весь экран
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
-	equipment_button.pressed.connect(_on_equipment_pressed)
-	interior_button.pressed.connect(_on_interior_pressed)
-	hardware_button.pressed.connect(_on_hardware_pressed)
-	pets_button.pressed.connect(_on_pets_pressed)
+	# Подключаем кнопки секций через лямбды — все делают одно и то же
+	equipment_button.pressed.connect(func(): show_section("equipment"))
+	interior_button.pressed.connect(func(): show_section("interior"))
+	hardware_button.pressed.connect(func(): show_section("hardware"))
+	pets_button.pressed.connect(func(): show_section("pets"))
 
-	close_button.pressed.connect(_on_close_pressed)
+	close_button.pressed.connect(close_popup)
 
+	# Показываем начальную секцию
 	show_section("equipment")
 
 
+# Главная точка входа при смене вкладки
 func show_section(section_id: String) -> void:
 	current_section = section_id
-	update_title()
-	update_background()
-	rebuild_content()
+	_update_title()
+	_update_background()
+	_rebuild_content()
 
 
-func update_title() -> void:
-	match current_section:
-		"equipment":
-			title_label.text = "Грузовой отсек — Снаряжение"
-		"interior":
-			title_label.text = "Грузовой отсек — Интерьер"
-		"hardware":
-			title_label.text = "Грузовой отсек — Модули"
-		"pets":
-			title_label.text = "Грузовой отсек — Питомцы"
-		_:
-			title_label.text = "Грузовой отсек"
+# Обновляем заголовок окна по словарю
+func _update_title() -> void:
+	title_label.text = SECTION_TITLES.get(current_section, "Грузовой отсек")
 
 
-func update_background() -> void:
-	var path = backgrounds.get(current_section, "")
+# Загружаем фоновую текстуру для секции (если задана)
+func _update_background() -> void:
+	var path: String = backgrounds.get(current_section, "")
 
 	if path.is_empty():
 		section_background.texture = null
@@ -80,40 +91,26 @@ func update_background() -> void:
 	section_background.texture = texture
 
 
-func rebuild_content() -> void:
+# Очищаем контент и создаём панель нужной секции
+func _rebuild_content() -> void:
+	# Удаляем все старые дочерние узлы
 	for child in content_root.get_children():
-		content_root.remove_child(child)
 		child.free()
 
-	if current_section == "equipment":
-		var equipment_panel = cargo_equipment_panel_scene.instantiate()
-		content_root.add_child(equipment_panel)
-		equipment_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		equipment_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	# Берём сцену из словаря
+	var scene: PackedScene = SECTION_SCENES.get(current_section, null)
+
+	if scene != null:
+		# Instantiate и стандартная настройка панели
+		var panel: Control = scene.instantiate()
+		content_root.add_child(panel)
+		panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		panel.mouse_filter = Control.MOUSE_FILTER_STOP
 		return
 
-	if current_section == "interior":
-		var interior_panel = cargo_interior_panel_scene.instantiate()
-		content_root.add_child(interior_panel)
-		interior_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		interior_panel.mouse_filter = Control.MOUSE_FILTER_STOP
-		return
-
-	if current_section == "hardware":
-		var hardware_panel = cargo_hardware_panel_scene.instantiate()
-		content_root.add_child(hardware_panel)
-		hardware_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		hardware_panel.mouse_filter = Control.MOUSE_FILTER_STOP
-		return
-	if current_section == "pets":
-		var pets_panel = cargo_pets_panel_scene.instantiate()
-		content_root.add_child(pets_panel)
-		pets_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		pets_panel.mouse_filter = Control.MOUSE_FILTER_STOP
-		return
-
-	var label = Label.new()
-	label.text = _get_placeholder_text()
+	# Запасной вариант — текстовый placeholder для неизвестных секций
+	var label := Label.new()
+	label.text = "Пустой раздел."
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -121,45 +118,13 @@ func rebuild_content() -> void:
 	content_root.add_child(label)
 
 
-func _get_placeholder_text() -> String:
-	match current_section:
-		"equipment":
-			return "Раздел снаряжения."
-		"interior":
-			return "Раздел интерьера."
-		"hardware":
-			return "Раздел модулей."
-		"pets":
-			return "Раздел питомцев.\nЗдесь позже будет выбор активного питомца."
-		_:
-			return "Пустой раздел."
-
-
-func _on_equipment_pressed() -> void:
-	show_section("equipment")
-
-
-func _on_interior_pressed() -> void:
-	show_section("interior")
-
-
-func _on_hardware_pressed() -> void:
-	show_section("hardware")
-
-
-func _on_pets_pressed() -> void:
-	show_section("pets")
-
-
-func _on_close_pressed() -> void:
-	close_popup()
-
-
-func _unhandled_input(event) -> void:
+# Закрытие по Escape
+func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		close_popup()
 
 
+# Испускаем сигнал и уничтожаем попап
 func close_popup() -> void:
 	popup_closed.emit()
 	queue_free()

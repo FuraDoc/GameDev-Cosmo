@@ -2,11 +2,8 @@
 
 [ext_resource type="Script" uid="uid://ur0wgxbrm07c" path="res://scripts/ui/cargo_interior_panel.gd" id="1_5wdof"]
 [ext_resource type="Texture2D" uid="uid://35mklgrt3evn" path="res://assets/backgrounds/equip/CargoInteriorBackground.jpg" id="2_54cmk"]
-[ext_resource type="Texture2D" uid="uid://b66j8dd62lxhd" path="res://assets/items/TestInteriorImage.png" id="3_okiu5"]
-[ext_resource type="Texture2D" uid="uid://b2hse8i0m5f7e" path="res://assets/items/SleepZone01.png" id="4_okiu5"]
-[ext_resource type="Texture2D" uid="uid://bx2dvnkwdaepm" path="res://assets/items/Stool01.png" id="5_ycb34"]
 
-[node name="CargoInteriorPanel" type="Control" unique_id=873621912]
+[node name="CargoInteriorPanel" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -15,86 +12,61 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_5wdof")
 
-[node name="StorageBackground" type="TextureRect" parent="." unique_id=2121569149]
+[node name="StorageBackground" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -6.0
-offset_top = 6.0
-offset_right = -6.0
-offset_bottom = 6.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("2_54cmk")
-
-[node name="TestInteriorItem" type="TextureRect" parent="." unique_id=145575624]
-layout_mode = 0
-offset_left = 834.0
-offset_top = 517.0
-offset_right = 1203.0
-offset_bottom = 807.0
-texture = ExtResource("3_okiu5")
 expand_mode = 1
+stretch_mode = 6
 
-[node name="SleepZoneItem" type="TextureRect" parent="." unique_id=1553770503]
+[node name="ItemsRoot" type="Control" parent="."]
 layout_mode = 1
-anchors_preset = 6
-anchor_left = 1.0
-anchor_top = 0.5
+anchors_preset = 15
 anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = -920.0
-offset_top = -175.0
-offset_bottom = 363.0
-grow_horizontal = 0
+anchor_bottom = 1.0
+grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("4_okiu5")
-expand_mode = 1
 
-[node name="StoolItem" type="TextureRect" parent="." unique_id=879541228]
+[node name="TopInfoContainer" type="CenterContainer" parent="."]
+custom_minimum_size = Vector2(520, 220)
 layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_left = 88.0
-offset_top = -490.0
-offset_right = 648.0
-offset_bottom = 20.0
-grow_vertical = 2
-texture = ExtResource("5_ycb34")
-expand_mode = 1
-
-[node name="BottomInfoContainer" type="CenterContainer" parent="." unique_id=707076904]
-custom_minimum_size = Vector2(500, 350)
-layout_mode = 1
-anchors_preset = 5
+anchors_preset = 10
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -250.0
-offset_right = 250.0
-offset_bottom = 300.0
+offset_left = -260.0
+offset_right = 260.0
+offset_bottom = 220.0
 grow_horizontal = 2
 
-[node name="TooltipPanel" type="Panel" parent="BottomInfoContainer" unique_id=314919076]
-visible = false
-custom_minimum_size = Vector2(450, 310)
+[node name="TooltipPanel" type="Panel" parent="TopInfoContainer"]
+custom_minimum_size = Vector2(520, 200)
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="BottomInfoContainer/TooltipPanel" unique_id=1272769111]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="VBoxContainer" type="VBoxContainer" parent="TopInfoContainer/TooltipPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = 14.0
+offset_right = -18.0
+offset_bottom = -14.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="ItemNameLabel" type="Label" parent="BottomInfoContainer/TooltipPanel/VBoxContainer" unique_id=1159476090]
+[node name="ItemNameLabel" type="Label" parent="TopInfoContainer/TooltipPanel/VBoxContainer"]
 layout_mode = 2
 
-[node name="ItemDescriptionLabel" type="Label" parent="BottomInfoContainer/TooltipPanel/VBoxContainer" unique_id=78914787]
-custom_minimum_size = Vector2(450, 220)
+[node name="ItemDescriptionLabel" type="Label" parent="TopInfoContainer/TooltipPanel/VBoxContainer"]
+custom_minimum_size = Vector2(480, 120)
 layout_mode = 2
 autowrap_mode = 2
 
-[node name="ActionButton" type="Button" parent="BottomInfoContainer/TooltipPanel/VBoxContainer" unique_id=1106772810]
-custom_minimum_size = Vector2(140, 40)
+[node name="ActionButton" type="Button" parent="TopInfoContainer/TooltipPanel/VBoxContainer"]
+custom_minimum_size = Vector2(160, 42)
 layout_mode = 2

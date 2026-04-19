@@ -55,6 +55,7 @@ func connect_ui_signals() -> void:
 
 func _on_cargo_bay_requested() -> void:
 	ui_controller.set_main_buttons_enabled(false)
+	view_controller.visible = false
 	
 	var popup = cargo_bay_popup_scene.instantiate()
 	add_child(popup)
@@ -63,6 +64,7 @@ func _on_cargo_bay_requested() -> void:
 	
 	
 func _on_cargo_bay_closed() -> void:
+	view_controller.visible = true
 	ui_controller.set_main_buttons_enabled(true)
 
 

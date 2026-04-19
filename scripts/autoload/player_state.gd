@@ -1,7 +1,5 @@
 extends Node
 
-# PlayerState — это глобальное состояние игрока.
-
 signal item_added(item_id: String)
 signal interior_changed
 signal hardware_changed
@@ -10,10 +8,17 @@ signal modules_changed
 
 var found_items: Dictionary = {}
 
-var dev_give_all_items := true
-
 var found_interior_items: Array[String] = []
-var installed_interior_items: Array[String] = []
+var installed_interior_by_zone := {
+	1: "",
+	2: "",
+	3: "",
+	4: "",
+	5: "",
+	6: "",
+	7: "",
+	8: ""
+}
 
 var found_hardware_items: Array[String] = []
 var installed_hardware_items: Array[String] = []
@@ -37,13 +42,97 @@ const DEFAULT_ACTIVE_MODULES := {
 	"panel": "module_panel_001"
 }
 
+var dev_give_all_items := true
+
+
+func _ready() -> void:
+	if dev_give_all_items:
+		debug_give_all_items()
+		debug_give_all_interior_items()
+		debug_give_all_modules()
+		debug_give_all_pets()
+		apply_default_modules()
+
+
+func has_item(item_id: String) -> bool:
+	return found_items.get(item_id, false)
+
+
+func add_item(item_id: String) -> void:
+	if item_id.is_empty():
+		push_error("PlayerState.add_item(): пустой item_id")
+		return
+
+	if not ItemDatabase.has_item_definition(item_id):
+		push_error("PlayerState.add_item(): неизвестный item_id: '%s'" % item_id)
+		return
+
+	if has_item(item_id):
+		return
+
+	found_items[item_id] = true
+	item_added.emit(item_id)
+
+
+func remove_item(item_id: String) -> void:
+	if found_items.has(item_id):
+		found_items.erase(item_id)
+
+
+func get_found_item_ids() -> Array[String]:
+	return Array(found_items.keys(), TYPE_STRING, "", null)
+
+
+func get_found_items_data() -> Array[ItemData]:
+	var result: Array[ItemData] = []
+	for item_id in found_items.keys():
+		var item = ItemDatabase.get_item(item_id)
+		if item != null:
+			result.append(item)
+	return result
+
 
 func has_found_interior_item(item_id: String) -> bool:
 	return item_id in found_interior_items
 
 
 func is_interior_item_installed(item_id: String) -> bool:
-	return item_id in installed_interior_items
+	return get_interior_item_zone(item_id) != -1
+
+
+func get_interior_item_zone(item_id: String) -> int:
+	for zone_id in range(1, 9):
+		if String(installed_interior_by_zone[zone_id]) == item_id:
+			return zone_id
+	return -1
+
+
+func get_interior_item_for_zone(zone_id: int) -> String:
+	return String(installed_interior_by_zone.get(zone_id, ""))
+
+
+func get_installed_interior_items() -> Array[String]:
+	var result: Array[String] = []
+	for zone_id in range(1, 9):
+		var item_id := get_interior_item_for_zone(zone_id)
+		if not item_id.is_empty():
+			result.append(item_id)
+	return result
+
+
+func get_installed_interior_zone_map() -> Dictionary:
+	return installed_interior_by_zone.duplicate(true)
+
+
+func is_interior_zone_occupied(zone_id: int) -> bool:
+	return not get_interior_item_for_zone(zone_id).is_empty()
+
+
+func get_first_free_interior_zone() -> int:
+	for zone_id in range(1, 9):
+		if get_interior_item_for_zone(zone_id).is_empty():
+			return zone_id
+	return -1
 
 
 func add_found_interior_item(item_id: String) -> void:
@@ -52,20 +141,48 @@ func add_found_interior_item(item_id: String) -> void:
 		interior_changed.emit()
 
 
-func install_interior_item(item_id: String) -> void:
+func install_interior_item(item_id: String, zone_id: int = -1) -> void:
 	if item_id not in found_interior_items:
-		push_warning("Нельзя установить ненайденный интерьерный предмет: " + item_id)
+		push_warning("Нельзя установить ненайденный интерьерный предмет: '%s'" % item_id)
 		return
-	
-	if item_id not in installed_interior_items:
-		installed_interior_items.append(item_id)
-		interior_changed.emit()
+
+	var target_zone := zone_id
+	if target_zone == -1:
+		target_zone = get_first_free_interior_zone()
+
+	if not installed_interior_by_zone.has(target_zone):
+		push_warning("Неизвестная interior-зона: '%s'" % target_zone)
+		return
+
+	var current_zone := get_interior_item_zone(item_id)
+	if current_zone == target_zone:
+		return
+
+	if current_zone != -1:
+		installed_interior_by_zone[current_zone] = ""
+
+	installed_interior_by_zone[target_zone] = item_id
+	interior_changed.emit()
 
 
 func uninstall_interior_item(item_id: String) -> void:
-	if item_id in installed_interior_items:
-		installed_interior_items.erase(item_id)
+	var zone_id := get_interior_item_zone(item_id)
+	if zone_id != -1:
+		installed_interior_by_zone[zone_id] = ""
 		interior_changed.emit()
+
+
+func uninstall_interior_zone(zone_id: int) -> void:
+	if not installed_interior_by_zone.has(zone_id):
+		return
+	if get_interior_item_for_zone(zone_id).is_empty():
+		return
+	installed_interior_by_zone[zone_id] = ""
+	interior_changed.emit()
+
+
+func set_interior_item_zone(item_id: String, zone_id: int) -> void:
+	install_interior_item(item_id, zone_id)
 
 
 func has_found_hardware_item(item_id: String) -> bool:
@@ -84,9 +201,8 @@ func add_found_hardware_item(item_id: String) -> void:
 
 func install_hardware_item(item_id: String) -> void:
 	if item_id not in found_hardware_items:
-		push_warning("Нельзя установить ненайденный hardware-предмет: " + item_id)
+		push_warning("Нельзя установить ненайденный hardware-предмет: '%s'" % item_id)
 		return
-	
 	if item_id not in installed_hardware_items:
 		installed_hardware_items.append(item_id)
 		hardware_changed.emit()
@@ -114,12 +230,10 @@ func is_pet_active(pet_id: String) -> bool:
 
 func summon_pet(pet_id: String) -> void:
 	if pet_id not in found_pet_ids:
-		push_warning("Нельзя призвать ненайденного питомца: " + pet_id)
+		push_warning("Нельзя призвать ненайденного питомца: '%s'" % pet_id)
 		return
-
 	if active_pet_id == pet_id:
 		return
-
 	active_pet_id = pet_id
 	pets_changed.emit()
 
@@ -127,14 +241,9 @@ func summon_pet(pet_id: String) -> void:
 func return_active_pet() -> void:
 	if active_pet_id.is_empty():
 		return
-
 	active_pet_id = ""
 	pets_changed.emit()
 
-
-# =========================
-# MODULES
-# =========================
 
 func has_found_module(module_id: String) -> bool:
 	return module_id in found_module_ids
@@ -156,28 +265,23 @@ func is_module_installed(module_id: String, zone_id: String) -> bool:
 
 func install_module(module_id: String, zone_id: String) -> void:
 	if module_id not in found_module_ids:
-		push_warning("Нельзя установить ненайденный модуль: " + module_id)
+		push_warning("Нельзя установить ненайденный модуль: '%s'" % module_id)
 		return
-
 	if not active_modules.has(zone_id):
-		push_warning("Неизвестная зона модуля: " + zone_id)
+		push_warning("Неизвестная зона модуля: '%s'" % zone_id)
 		return
-
 	if active_modules[zone_id] == module_id:
 		return
-
 	active_modules[zone_id] = module_id
 	modules_changed.emit()
 
 
 func uninstall_module(zone_id: String) -> void:
 	if not active_modules.has(zone_id):
-		push_warning("Неизвестная зона модуля: " + zone_id)
+		push_warning("Неизвестная зона модуля: '%s'" % zone_id)
 		return
-
-	if String(active_modules[zone_id]).is_empty():
+	if active_modules[zone_id] == "":
 		return
-
 	active_modules[zone_id] = ""
 	modules_changed.emit()
 
@@ -185,80 +289,26 @@ func uninstall_module(zone_id: String) -> void:
 func clear_module(module_id: String, zone_id: String) -> void:
 	if not active_modules.has(zone_id):
 		return
-
 	if active_modules[zone_id] == module_id:
 		active_modules[zone_id] = ""
 		modules_changed.emit()
 
 
 func apply_default_modules(emit_signal: bool = true) -> void:
-	var changed := false
-
-	for zone_id in DEFAULT_ACTIVE_MODULES.keys():
+	for zone_id in DEFAULT_ACTIVE_MODULES:
 		var module_id: String = DEFAULT_ACTIVE_MODULES[zone_id]
-
 		if module_id not in found_module_ids:
-			add_found_module(module_id)
+			found_module_ids.append(module_id)
 
+	var changed := false
+	for zone_id in DEFAULT_ACTIVE_MODULES:
+		var module_id: String = DEFAULT_ACTIVE_MODULES[zone_id]
 		if active_modules.get(zone_id, "") != module_id:
 			active_modules[zone_id] = module_id
 			changed = true
 
 	if changed and emit_signal:
 		modules_changed.emit()
-
-
-func _ready():
-	if dev_give_all_items:
-		debug_give_all_items()
-		debug_give_all_interior_items()
-		debug_give_all_modules()
-		debug_give_all_pets()
-		apply_default_modules()
-
-
-func has_item(item_id: String) -> bool:
-	return found_items.get(item_id, false)
-
-
-func add_item(item_id: String) -> void:
-	if item_id.is_empty():
-		push_error("PlayerState.add_item(): пустой item_id")
-		return
-	
-	if not ItemDatabase.has_item_definition(item_id):
-		push_error("PlayerState.add_item(): неизвестный item_id: " + item_id)
-		return
-	
-	if has_item(item_id):
-		return
-	
-	found_items[item_id] = true
-	item_added.emit(item_id)
-	print("PlayerState: найден предмет -> ", item_id)
-
-
-func remove_item(item_id: String) -> void:
-	if found_items.has(item_id):
-		found_items.erase(item_id)
-
-
-func get_found_item_ids() -> Array[String]:
-	var result: Array[String] = []
-	for item_id in found_items.keys():
-		result.append(item_id)
-	return result
-
-
-func get_found_items_data() -> Array[ItemData]:
-	var result: Array[ItemData] = []
-	
-	for item_id in found_items.keys():
-		var item = ItemDatabase.get_item(item_id)
-		if item != null:
-			result.append(item)
-	
-	return result
 
 
 func debug_give_all_items() -> void:
@@ -270,23 +320,14 @@ func debug_give_all_items() -> void:
 
 
 func debug_give_all_interior_items() -> void:
-	add_found_interior_item("small_plant")
-	add_found_interior_item("sleep_zone")
-	add_found_interior_item("stool")
+	for i in range(1, 41):
+		add_found_interior_item("interior_plant_%03d" % i)
 
 
 func debug_give_all_modules() -> void:
-	for i in range(1, 9):
-		add_found_module("module_sleep_%03d" % i)
-
-	for i in range(1, 9):
-		add_found_module("module_workzone_%03d" % i)
-
-	for i in range(1, 9):
-		add_found_module("module_front_%03d" % i)
-
-	for i in range(1, 9):
-		add_found_module("module_panel_%03d" % i)
+	for prefix in ["module_sleep", "module_workzone", "module_front", "module_panel"]:
+		for i in range(1, 9):
+			add_found_module("%s_%03d" % [prefix, i])
 
 
 func debug_give_all_pets() -> void:

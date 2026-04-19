@@ -3,8 +3,8 @@ extends RefCounted
 
 var enabled := true
 
-var selected_layer := "panel" # "interior" / "module" / "pet" / "panel"
-var selected_item_id := "module_panel_008"
+var selected_layer := "interior.ship" # "interior.ship" / "module" / "pet" / "panel"
+var selected_item_id := "interior_plant_001"
 var selected_pet_zone := 0
 
 var move_step := 0.01
@@ -28,6 +28,7 @@ func handle_input(
 	cockpit_layer: Control,
 	cockpit_texture: Texture2D,
 	clear_layer_callable: Callable,
+	refresh_interior_items_callable: Callable,
 	update_interior_layer_callable: Callable,
 	update_panel_layer_callable: Callable
 ) -> void:
@@ -55,12 +56,11 @@ func handle_input(
 		)
 		return
 
-	if selected_layer == "interior":
+	if selected_layer == "interior" or selected_layer == "interior.ship":
 		_handle_interior_input(
 			event,
 			interior_visual_data,
-			module_layer_controller,
-			pet_layer_controller,
+			refresh_interior_items_callable,
 			update_interior_layer_callable
 		)
 		return
@@ -117,13 +117,14 @@ func print_selected_data(
 		print("---------------------------")
 		return
 
-	if selected_layer == "interior":
+	if selected_layer == "interior" or selected_layer == "interior.ship":
 		if not interior_visual_data.has(selected_item_id):
 			return
 
 		var interior_data = interior_visual_data[selected_item_id]
 		print("\"", selected_item_id, "\": {")
 		print("\t\"texture_path\": \"", interior_data["texture_path"], "\",")
+		print("\t\"zone\": ", interior_data.get("zone", 1), ",")
 		print("\t\"anchor_pos\": Vector2(", interior_data["anchor_pos"].x, ", ", interior_data["anchor_pos"].y, "),")
 		print("\t\"size_ratio\": Vector2(", interior_data["size_ratio"].x, ", ", interior_data["size_ratio"].y, ")")
 		print("}")
@@ -141,6 +142,24 @@ func print_selected_data(
 		print("\t\"scale\": ", panel_data.get("scale", 1.0))
 		print("}")
 		print("---------------------------")
+
+
+func cycle_ship_interior_item(interior_visual_data: Dictionary, direction: int) -> void:
+	var item_ids: Array[String] = []
+	for item_id in interior_visual_data.keys():
+		item_ids.append(String(item_id))
+
+	item_ids.sort()
+	if item_ids.is_empty():
+		return
+
+	var current_index := item_ids.find(selected_item_id)
+	if current_index == -1:
+		current_index = 0
+
+	var next_index := posmod(current_index + direction, item_ids.size())
+	selected_item_id = item_ids[next_index]
+	print("Selected [interior.ship]: ", selected_item_id)
 
 
 func _handle_pet_input(
@@ -298,8 +317,7 @@ func _handle_module_input(
 func _handle_interior_input(
 	event: InputEventKey,
 	interior_visual_data: Dictionary,
-	module_layer_controller,
-	pet_layer_controller,
+	refresh_interior_items_callable: Callable,
 	update_interior_layer_callable: Callable
 ) -> void:
 	if not interior_visual_data.has(selected_item_id):
@@ -315,6 +333,7 @@ func _handle_interior_input(
 	var changed := false
 	var anchor_pos: Vector2 = interior_visual_data[selected_item_id]["anchor_pos"]
 	var size_ratio: Vector2 = interior_visual_data[selected_item_id]["size_ratio"]
+	var zone_id: int = int(interior_visual_data[selected_item_id].get("zone", 1))
 
 	if event.keycode == KEY_LEFT:
 		anchor_pos.x -= current_move_step
@@ -334,22 +353,30 @@ func _handle_interior_input(
 	elif event.keycode == KEY_BRACKETRIGHT:
 		size_ratio *= current_scale_step
 		changed = true
+	elif event.keycode >= KEY_1 and event.keycode <= KEY_8:
+		zone_id = int(event.keycode - KEY_0)
+		interior_visual_data[selected_item_id]["zone"] = zone_id
+		PlayerState.set_interior_item_zone(selected_item_id, zone_id)
+		refresh_interior_items_callable.call()
+		print("Assigned [interior.ship] ", selected_item_id, " -> zone=", zone_id)
+		return
 
 	anchor_pos.x = clamp(anchor_pos.x, 0.0, 1.0)
 	anchor_pos.y = clamp(anchor_pos.y, 0.0, 1.0)
-
 	size_ratio.x = clamp(size_ratio.x, min_ratio, max_ratio)
 	size_ratio.y = clamp(size_ratio.y, min_ratio, max_ratio)
 
 	interior_visual_data[selected_item_id]["anchor_pos"] = anchor_pos
 	interior_visual_data[selected_item_id]["size_ratio"] = size_ratio
+	interior_visual_data[selected_item_id]["zone"] = zone_id
 
 	if changed:
 		update_interior_layer_callable.call()
 		print(
-			"Updated [interior] ", selected_item_id,
-			" -> anchor_pos=", interior_visual_data[selected_item_id]["anchor_pos"],
-			" size_ratio=", interior_visual_data[selected_item_id]["size_ratio"]
+			"Updated [interior.ship] ", selected_item_id,
+			" -> zone=", zone_id,
+			" anchor_pos=", anchor_pos,
+			" size_ratio=", size_ratio
 		)
 
 
