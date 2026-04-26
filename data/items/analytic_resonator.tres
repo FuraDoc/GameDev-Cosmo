@@ -1,21 +1,14 @@
-[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://byffsljiudxnx"]
+[gd_resource type="Resource" script_class="ItemData" format=3]
 
-[ext_resource type="Script" uid="uid://clqkbjc8cvrhj" path="res://resources/item_data.gd" id="1_dxjkb"]
-[ext_resource type="Texture2D" uid="uid://c4skp6tnq03cr" path="res://assets/items/analytic_resonator.png" id="1_gxety"]
+[ext_resource type="Script" path="res://resources/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/equipment/rezonator1.png" id="2"]
 
 [resource]
-script = ExtResource("1_dxjkb")
+script = ExtResource("1")
 item_id = "analytic_resonator"
 title = "Аналитический резонатор"
-description = "Наручное устройство с голографическим интерфейсом, закреплённое на предплечье.
+description = "Наручный комплекс на предплечье и запястье, напоминающий мини-компьютер с набором датчиков и универсальных интерфейсов.
 
-Используется для анализа языковых, звуковых, световых и структурных паттернов, а также для взаимодействия с древними системами, интерфейсами и необычными формами коммуникации.
-Применение:
-
-дешифровка символов;
-работа с древними механизмами;
-попытка мирного контакта;
-интерпретация сигналов;
-поиск “ключа” к чужой логике."
-equipment_texture = ExtResource("1_gxety")
-metadata/_custom_type_script = "uid://clqkbjc8cvrhj"
+Умеет подключаться к человеческим системам: дверям, замкам, камерам, компьютерам и другим интерфейсам.
+Дополнительно анализирует речь, интонации и звуки, переводит на лету и помогает налаживать контакт с живыми существами."
+equipment_texture = ExtResource("2")

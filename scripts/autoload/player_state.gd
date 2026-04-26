@@ -1,12 +1,22 @@
 extends Node
 
 signal item_added(item_id: String)
+signal suit_changed(active_suit_id: String)
 signal interior_changed
 signal hardware_changed
 signal pets_changed
 signal modules_changed
 
+const DEFAULT_SUIT_ID := "standard_suit"
+const DEFAULT_ACTIVE_MODULES := {
+	"sleep": "module_sleep_001",
+	"workzone": "module_workzone_001",
+	"front": "module_front_001",
+	"panel": "module_panel_001"
+}
+
 var found_items: Dictionary = {}
+var active_suit_id: String = ""
 
 var found_interior_items: Array[String] = []
 var installed_interior_by_zone := {
@@ -27,7 +37,6 @@ var found_pet_ids: Array[String] = []
 var active_pet_id: String = ""
 
 var found_module_ids: Array[String] = []
-
 var active_modules := {
 	"sleep": "",
 	"workzone": "",
@@ -35,17 +44,13 @@ var active_modules := {
 	"panel": ""
 }
 
-const DEFAULT_ACTIVE_MODULES := {
-	"sleep": "module_sleep_001",
-	"workzone": "module_workzone_001",
-	"front": "module_front_001",
-	"panel": "module_panel_001"
-}
-
 var dev_give_all_items := true
 
 
 func _ready() -> void:
+	ensure_starting_equipment()
+	apply_default_modules(false)
+
 	if dev_give_all_items:
 		debug_give_all_items()
 		debug_give_all_interior_items()
@@ -54,17 +59,25 @@ func _ready() -> void:
 		apply_default_modules()
 
 
+func ensure_starting_equipment() -> void:
+	if not has_item(DEFAULT_SUIT_ID):
+		add_item(DEFAULT_SUIT_ID)
+
+	if active_suit_id.is_empty():
+		active_suit_id = DEFAULT_SUIT_ID
+
+
 func has_item(item_id: String) -> bool:
 	return found_items.get(item_id, false)
 
 
 func add_item(item_id: String) -> void:
 	if item_id.is_empty():
-		push_error("PlayerState.add_item(): пустой item_id")
+		push_error("PlayerState.add_item(): empty item_id")
 		return
 
 	if not ItemDatabase.has_item_definition(item_id):
-		push_error("PlayerState.add_item(): неизвестный item_id: '%s'" % item_id)
+		push_error("PlayerState.add_item(): unknown item_id: '%s'" % item_id)
 		return
 
 	if has_item(item_id):
@@ -73,10 +86,20 @@ func add_item(item_id: String) -> void:
 	found_items[item_id] = true
 	item_added.emit(item_id)
 
+	if active_suit_id.is_empty() and _is_suit_item(item_id):
+		equip_suit(item_id)
+
 
 func remove_item(item_id: String) -> void:
-	if found_items.has(item_id):
-		found_items.erase(item_id)
+	if not found_items.has(item_id):
+		return
+
+	found_items.erase(item_id)
+
+	if active_suit_id == item_id:
+		active_suit_id = ""
+		ensure_starting_equipment()
+		suit_changed.emit(active_suit_id)
 
 
 func get_found_item_ids() -> Array[String]:
@@ -90,6 +113,39 @@ func get_found_items_data() -> Array[ItemData]:
 		if item != null:
 			result.append(item)
 	return result
+
+
+func has_active_suit(suit_id: String) -> bool:
+	return active_suit_id == suit_id
+
+
+func get_active_suit_id() -> String:
+	return active_suit_id
+
+
+func equip_suit(suit_id: String) -> void:
+	if suit_id.is_empty():
+		push_warning("PlayerState.equip_suit(): empty suit_id")
+		return
+
+	if not has_item(suit_id):
+		push_warning("PlayerState.equip_suit(): suit not found: '%s'" % suit_id)
+		return
+
+	if not _is_suit_item(suit_id):
+		push_warning("PlayerState.equip_suit(): item is not a suit: '%s'" % suit_id)
+		return
+
+	if active_suit_id == suit_id:
+		return
+
+	active_suit_id = suit_id
+	suit_changed.emit(active_suit_id)
+
+
+func _is_suit_item(item_id: String) -> bool:
+	var item_data := ItemDatabase.get_item(item_id)
+	return item_data != null and item_data.is_suit
 
 
 func has_found_interior_item(item_id: String) -> bool:
@@ -143,7 +199,7 @@ func add_found_interior_item(item_id: String) -> void:
 
 func install_interior_item(item_id: String, zone_id: int = -1) -> void:
 	if item_id not in found_interior_items:
-		push_warning("Нельзя установить ненайденный интерьерный предмет: '%s'" % item_id)
+		push_warning("Cannot install unknown interior item: '%s'" % item_id)
 		return
 
 	var target_zone := zone_id
@@ -151,7 +207,7 @@ func install_interior_item(item_id: String, zone_id: int = -1) -> void:
 		target_zone = get_first_free_interior_zone()
 
 	if not installed_interior_by_zone.has(target_zone):
-		push_warning("Неизвестная interior-зона: '%s'" % target_zone)
+		push_warning("Unknown interior zone: '%s'" % target_zone)
 		return
 
 	var current_zone := get_interior_item_zone(item_id)
@@ -201,7 +257,7 @@ func add_found_hardware_item(item_id: String) -> void:
 
 func install_hardware_item(item_id: String) -> void:
 	if item_id not in found_hardware_items:
-		push_warning("Нельзя установить ненайденный hardware-предмет: '%s'" % item_id)
+		push_warning("Cannot install unknown hardware item: '%s'" % item_id)
 		return
 	if item_id not in installed_hardware_items:
 		installed_hardware_items.append(item_id)
@@ -230,7 +286,7 @@ func is_pet_active(pet_id: String) -> bool:
 
 func summon_pet(pet_id: String) -> void:
 	if pet_id not in found_pet_ids:
-		push_warning("Нельзя призвать ненайденного питомца: '%s'" % pet_id)
+		push_warning("Cannot summon unknown pet: '%s'" % pet_id)
 		return
 	if active_pet_id == pet_id:
 		return
@@ -265,10 +321,10 @@ func is_module_installed(module_id: String, zone_id: String) -> bool:
 
 func install_module(module_id: String, zone_id: String) -> void:
 	if module_id not in found_module_ids:
-		push_warning("Нельзя установить ненайденный модуль: '%s'" % module_id)
+		push_warning("Cannot install unknown module: '%s'" % module_id)
 		return
 	if not active_modules.has(zone_id):
-		push_warning("Неизвестная зона модуля: '%s'" % zone_id)
+		push_warning("Unknown module zone: '%s'" % zone_id)
 		return
 	if active_modules[zone_id] == module_id:
 		return
@@ -278,7 +334,7 @@ func install_module(module_id: String, zone_id: String) -> void:
 
 func uninstall_module(zone_id: String) -> void:
 	if not active_modules.has(zone_id):
-		push_warning("Неизвестная зона модуля: '%s'" % zone_id)
+		push_warning("Unknown module zone: '%s'" % zone_id)
 		return
 	if active_modules[zone_id] == "":
 		return
@@ -312,11 +368,15 @@ func apply_default_modules(emit_signal: bool = true) -> void:
 
 
 func debug_give_all_items() -> void:
-	add_item("rescue_suit")
+	add_item("standard_suit")
+	add_item("heavy_rescue_suit")
+	add_item("nova_suit")
 	add_item("ar_visor")
 	add_item("wave_drone")
 	add_item("analytic_resonator")
 	add_item("smart_metal_container")
+	add_item("plasma_cutter")
+	add_item("strange_cube")
 
 
 func debug_give_all_interior_items() -> void:

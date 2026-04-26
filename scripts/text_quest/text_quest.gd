@@ -123,13 +123,15 @@ func get_available_choices(node_data: Dictionary) -> Array:
 	
 	for choice in choices:
 		var required_item = choice.get("required_item", "")
+		var required_suit = choice.get("required_suit", "")
 		
-		if required_item.is_empty():
-			result.append(choice)
+		if not required_item.is_empty() and not PlayerState.has_item(required_item):
 			continue
 		
-		if PlayerState.has_item(required_item):
-			result.append(choice)
+		if not required_suit.is_empty() and not PlayerState.has_active_suit(required_suit):
+			continue
+
+		result.append(choice)
 	
 	return result
 

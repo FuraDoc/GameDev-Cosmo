@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://resources/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/equipment/suitstandart.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+item_id = "standard_suit"
+title = "Штатный скафандр"
+is_suit = true
+description = "Базовый корабельный скафандр, с которого начинается любая спокойная, долгая экспедиция.
+
+Надёжен, прост в обслуживании и не добавляет особых преимуществ.
+Подходит для обычных выходов и повседневной работы за пределами корабля."
+equipment_texture = ExtResource("2")

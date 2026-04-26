@@ -5,16 +5,23 @@
 
 [node name="CargoHardwarePanel" type="Control" unique_id=1518798193]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_rq084")
 
 [node name="StorageBackground" type="TextureRect" parent="." unique_id=705026938]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 texture = ExtResource("2_jt7eh")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="DiagnosticMonitorItem" type="TextureRect" parent="." unique_id=1912574176]
 layout_mode = 1
@@ -35,9 +42,18 @@ offset_bottom = 344.0
 grow_horizontal = 0
 
 [node name="BottomInfoContainer" type="CenterContainer" parent="." unique_id=1771365143]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 10
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_top = -260.0
+offset_right = 320.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
 
 [node name="TooltipPanel" type="Panel" parent="BottomInfoContainer" unique_id=263731379]
 layout_mode = 2

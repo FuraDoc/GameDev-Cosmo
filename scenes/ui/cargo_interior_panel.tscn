@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://7ufa5ilpwr5b"]
 
 [ext_resource type="Script" uid="uid://ur0wgxbrm07c" path="res://scripts/ui/cargo_interior_panel.gd" id="1_5wdof"]
-[ext_resource type="Texture2D" uid="uid://35mklgrt3evn" path="res://assets/backgrounds/equip/CargoInteriorBackground.jpg" id="2_54cmk"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/equip/CargoInteriorBackground.png" id="2_54cmk"]
 
 [node name="CargoInteriorPanel" type="Control"]
 layout_mode = 3

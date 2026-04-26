@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://resources/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/equipment/qube1.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+item_id = "strange_cube"
+title = "Странный куб"
+description = "Загадочный пульсирующий куб, найденный на заброшенной станции вдали от обычных маршрутов.
+
+Он мягко светится голубым и не похож ни на контейнер, ни на прибор, ни на известный источник энергии.
+Назначение остаётся неизвестным, но сам факт его существования уже меняет то, как начинаешь смотреть на находки в космосе."
+equipment_texture = ExtResource("2")

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://resources/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/equipment/suitfuture.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+item_id = "nova_suit"
+title = "Экспериментальный костюм \"Нова\""
+is_suit = true
+description = "Единственный в своём роде костюм из нанитовой ткани, больше похожий на технологический артефакт, чем на серийное снаряжение.
+
+Гибкая структура защищает от внешних воздействий и при этом усиливает движения владельца.
+В работе ощущается как лёгкий экзоскелет: быстрее, точнее, сильнее."
+equipment_texture = ExtResource("2")

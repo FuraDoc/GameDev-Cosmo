@@ -186,6 +186,7 @@ var panel_visual_data := {
 # ─────────────────────────────────────────────
 
 func _ready() -> void:
+	PlayerState.apply_default_modules(false)
 	load_static_layers()
 	refresh_panel_texture()
 	setup_periscope_overlay()

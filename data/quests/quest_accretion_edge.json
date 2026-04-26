@@ -25,7 +25,7 @@
 		{
 		  "text": "Пока ситуация не стала хуже, подготовить аварийный скафандр на случай выхода наружу",
 		  "next": "prep_suit",
-		  "required_item": "rescue_suit"
+		  "required_suit": "heavy_rescue_suit"
 		}
 	  ]
 	},
@@ -243,12 +243,12 @@
 		{
 		  "text": "Выйти на корпус и чинить антенную ферму",
 		  "next": "eva_antenna",
-		  "required_item": "rescue_suit"
+		  "required_suit": "heavy_rescue_suit"
 		},
 		{
 		  "text": "Выйти на корпус и чинить контур терморегуляции",
 		  "next": "eva_thermal",
-		  "required_item": "rescue_suit"
+		  "required_suit": "heavy_rescue_suit"
 		},
 		{
 		  "text": "Передумать и попытаться обойтись внутренними средствами",

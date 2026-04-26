@@ -580,7 +580,7 @@
 		{
 		  "text": "Использовать спасательный скафандр и провести демонтаж глубже",
 		  "next": "core_suit",
-		  "required_item": "rescue_suit"
+          "required_suit": "heavy_rescue_suit"
 		},
 		{
 		  "text": "Отказаться от этой идеи и вернуться к консоли",

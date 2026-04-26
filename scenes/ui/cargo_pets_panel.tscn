@@ -25,7 +25,7 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("2_1j2ru")
 expand_mode = 1
-stretch_mode = 5
+stretch_mode = 6
 
 [node name="AlienJellyCapsule" type="TextureRect" parent="." unique_id=1115228760]
 layout_mode = 0
@@ -60,9 +60,18 @@ texture = ExtResource("4_iwlgj")
 expand_mode = 1
 
 [node name="BottomInfoContainer" type="TextureRect" parent="." unique_id=1671645608]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 10
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -430.0
+offset_top = -280.0
+offset_right = 430.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 0
 
 [node name="TooltipPanel" type="Panel" parent="BottomInfoContainer" unique_id=1076112028]
 layout_mode = 0

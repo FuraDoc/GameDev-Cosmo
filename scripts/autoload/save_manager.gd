@@ -85,7 +85,8 @@ func create_new_game(slot_id: int, pilot_name: String) -> Dictionary:
 		"current_adventure_id": "signal_derelict",
 		"completed_quests_count": 0,
 		"play_time_seconds": 0,
-		"found_items": [],
+		"found_items": ["standard_suit"],
+		"active_suit_id": "standard_suit",
 		"last_saved_at": Time.get_datetime_string_from_system()
 	}
 	

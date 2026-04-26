@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cmkvnuotu4i1m"]
 
 [ext_resource type="Script" uid="uid://ijwhj6owcxyd" path="res://scripts/ui/cargo_bay_popup.gd" id="1_rkyuv"]
+[ext_resource type="Texture2D" uid="uid://diytrnvt8xv8c" path="res://assets/backgrounds/equip/cargoRamka01.png" id="2_frame"]
 
 [node name="CargoBayPopup" type="Control" unique_id=1522647417]
 layout_mode = 3
@@ -11,16 +12,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_rkyuv")
 
-[node name="DimBackground" type="ColorRect" parent="." unique_id=1035575075]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0.2627451, 0.33333334, 0.96862745)
-
-[node name="CenterContainer" type="CenterContainer" parent="." unique_id=459015922]
+[node name="ContentRoot" type="Control" parent="." unique_id=1638487868]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -29,82 +21,43 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Panel" type="Panel" parent="CenterContainer" unique_id=2110898731]
-custom_minimum_size = Vector2(1650, 900)
-layout_mode = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/Panel" unique_id=2086626505]
+[node name="CargoFrame" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_frame")
+expand_mode = 1
+stretch_mode = 6
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/Panel/MarginContainer" unique_id=978316287]
-layout_mode = 2
-theme_override_constants/separation = 22
+[node name="ButtonLayer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
-[node name="TitleLabel" type="Label" parent="CenterContainer/Panel/MarginContainer/VBoxContainer" unique_id=708074095]
-custom_minimum_size = Vector2(0, 30)
-layout_mode = 2
+[node name="EquipmentButton" type="Button" parent="ButtonLayer" unique_id=1177974978]
+layout_mode = 0
+text = "Снаряжение"
 
-[node name="ButtonsRow" type="HBoxContainer" parent="CenterContainer/Panel/MarginContainer/VBoxContainer" unique_id=463533245]
-custom_minimum_size = Vector2(0, 30)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_constants/separation = 50
-alignment = 1
-
-[node name="EquipmentButton" type="Button" parent="CenterContainer/Panel/MarginContainer/VBoxContainer/ButtonsRow" unique_id=1177974978]
-layout_mode = 2
-text = "Снаряжение
-"
-
-[node name="InteriorButton" type="Button" parent="CenterContainer/Panel/MarginContainer/VBoxContainer/ButtonsRow" unique_id=1195270823]
-layout_mode = 2
+[node name="InteriorButton" type="Button" parent="ButtonLayer" unique_id=1195270823]
+layout_mode = 0
 text = "Интерьер"
 
-[node name="HardwareButton" type="Button" parent="CenterContainer/Panel/MarginContainer/VBoxContainer/ButtonsRow" unique_id=1240017001]
-layout_mode = 2
+[node name="HardwareButton" type="Button" parent="ButtonLayer" unique_id=1240017001]
+layout_mode = 0
 text = "Оборудование"
 
-[node name="PetsButton" type="Button" parent="CenterContainer/Panel/MarginContainer/VBoxContainer/ButtonsRow" unique_id=1648210409]
-layout_mode = 2
+[node name="PetsButton" type="Button" parent="ButtonLayer" unique_id=1648210409]
+layout_mode = 0
 text = "Питомцы"
 
-[node name="ContentArea" type="Control" parent="CenterContainer/Panel/MarginContainer/VBoxContainer" unique_id=409563705]
-custom_minimum_size = Vector2(900, 730)
-layout_mode = 2
-
-[node name="SectionBackground" type="TextureRect" parent="CenterContainer/Panel/MarginContainer/VBoxContainer/ContentArea" unique_id=518018172]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="ContentLayer" type="MarginContainer" parent="CenterContainer/Panel/MarginContainer/VBoxContainer/ContentArea" unique_id=348690769]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="ContentRoot" type="Control" parent="CenterContainer/Panel/MarginContainer/VBoxContainer/ContentArea/ContentLayer" unique_id=1638487868]
-layout_mode = 2
-mouse_filter = 2
-
-[node name="CloseButton" type="Button" parent="CenterContainer/Panel/MarginContainer/VBoxContainer" unique_id=897558935]
-layout_mode = 2
-size_flags_horizontal = 4
+[node name="CloseButton" type="Button" parent="ButtonLayer" unique_id=897558935]
+layout_mode = 0
 text = "Закрыть"
-
-[connection signal="pressed" from="CenterContainer/Panel/MarginContainer/VBoxContainer/ButtonsRow/EquipmentButton" to="." method="_on_equipment_button_pressed"]
-[connection signal="pressed" from="CenterContainer/Panel/MarginContainer/VBoxContainer/ButtonsRow/InteriorButton" to="." method="_on_interior_button_pressed"]
-[connection signal="pressed" from="CenterContainer/Panel/MarginContainer/VBoxContainer/ButtonsRow/HardwareButton" to="." method="_on_devices_button_pressed"]
-[connection signal="pressed" from="CenterContainer/Panel/MarginContainer/VBoxContainer/ButtonsRow/PetsButton" to="." method="_on_pets_button_pressed"]

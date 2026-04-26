@@ -58,7 +58,9 @@ func _on_cargo_bay_requested() -> void:
 	view_controller.visible = false
 	
 	var popup = cargo_bay_popup_scene.instantiate()
-	add_child(popup)
+	ui_controller.windows_root.add_child(popup)
+	popup.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	popup.move_to_front()
 	
 	popup.popup_closed.connect(_on_cargo_bay_closed)
 	

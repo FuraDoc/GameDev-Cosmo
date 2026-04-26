@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://resources/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/equipment/plazma1.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+item_id = "plasma_cutter"
+title = "Плазменный резак"
+description = "Ручной инструмент, выпускающий управляемый плазменный луч длиной от нескольких сантиметров до метра.
+
+Режет металл, крепления, люки и почти всё, что вообще можно разрезать в полевых условиях.
+Редчайшая модель с батареями на холодном синтезе работает почти вечно и при необходимости становится опасным оружием ближнего боя."
+equipment_texture = ExtResource("2")

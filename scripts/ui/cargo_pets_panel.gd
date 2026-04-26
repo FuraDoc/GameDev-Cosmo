@@ -1,5 +1,7 @@
 extends Control
 
+const ShipDebugPositioningController = preload("res://scripts/ship/ship_debug_positioning_controller.gd")
+
 @onready var storage_background = $StorageBackground
 @onready var alien_jelly_capsule = $AlienJellyCapsule
 @onready var marta_cat_capsule = $MartaCatCapsule
@@ -15,6 +17,12 @@ extends Control
 var selected_pet_id: String = ""
 
 var pet_nodes: Dictionary = {}
+var debug_controller := ShipDebugPositioningController.new()
+var cargo_visual_data := {
+	"alien_jelly": {"anchor_pos": Vector2(0.225, 0.616), "size_ratio": Vector2(0.232, 0.483)},
+	"marta_cat": {"anchor_pos": Vector2(0.512, 0.666), "size_ratio": Vector2(0.276, 0.340)},
+	"robo_crab": {"anchor_pos": Vector2(0.804, 0.619), "size_ratio": Vector2(0.280, 0.525)},
+}
 var pet_data := {
 	"alien_jelly": {
 		"name": "Левитирующая медузка",
@@ -36,6 +44,9 @@ var pet_data := {
 
 func _ready() -> void:
 	tooltip_panel.visible = false
+	$BottomInfoContainer.z_index = 100
+	debug_controller.selected_layer = "pets.cargo"
+	debug_controller.selected_item_id = "alien_jelly"
 
 	pet_nodes = {
 		"alien_jelly": alien_jelly_capsule,
@@ -52,6 +63,8 @@ func _ready() -> void:
 	if PlayerState.has_signal("pets_changed"):
 		PlayerState.pets_changed.connect(_on_player_pets_changed)
 
+	await get_tree().process_frame
+	_update_item_layout()
 	refresh()
 
 
@@ -86,6 +99,7 @@ func _on_pet_mouse_entered(pet_id: String) -> void:
 		return
 
 	selected_pet_id = pet_id
+	debug_controller.selected_item_id = pet_id
 	_show_selected_pet_info()
 
 
@@ -127,3 +141,75 @@ func _on_action_button_pressed() -> void:
 
 func _on_player_pets_changed() -> void:
 	refresh()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not visible:
+		return
+	if not (event is InputEventKey):
+		return
+
+	var key_event := event as InputEventKey
+	if not key_event.pressed or key_event.echo:
+		return
+
+	var handled := debug_controller.handle_cargo_input(key_event, cargo_visual_data, Callable(self, "_update_item_layout"))
+	if handled:
+		selected_pet_id = debug_controller.selected_item_id
+		refresh()
+		get_viewport().set_input_as_handled()
+
+
+func _update_item_layout() -> void:
+	var background_rect := _get_drawn_background_rect(storage_background)
+	if background_rect.size.x <= 0.0 or background_rect.size.y <= 0.0:
+		return
+
+	for pet_id in pet_nodes.keys():
+		if not cargo_visual_data.has(pet_id):
+			continue
+
+		var node := pet_nodes[pet_id] as TextureRect
+		var data: Dictionary = cargo_visual_data[pet_id]
+		var anchor_pos: Vector2 = data["anchor_pos"]
+		var size_ratio: Vector2 = data["size_ratio"]
+		var item_size := _calculate_preserved_item_size(node.texture, background_rect.size * size_ratio)
+
+		node.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+		node.size = item_size
+		node.position = background_rect.position + Vector2(
+			background_rect.size.x * anchor_pos.x - item_size.x * 0.5,
+			background_rect.size.y * anchor_pos.y - item_size.y * 0.5
+		)
+
+
+func _get_drawn_background_rect(background: TextureRect) -> Rect2:
+	var viewport_size := background.size
+	if background.texture == null:
+		return Rect2(Vector2.ZERO, viewport_size)
+
+	var texture_size := background.texture.get_size()
+	if texture_size.x <= 0.0 or texture_size.y <= 0.0 or viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
+		return Rect2(Vector2.ZERO, viewport_size)
+
+	var scale_value: float = max(viewport_size.x / texture_size.x, viewport_size.y / texture_size.y)
+	var drawn_size := texture_size * scale_value
+	var drawn_position := (viewport_size - drawn_size) * 0.5
+	return Rect2(drawn_position, drawn_size)
+
+
+func _calculate_preserved_item_size(texture: Texture2D, max_size: Vector2) -> Vector2:
+	if texture == null:
+		return max_size
+
+	var texture_size := texture.get_size()
+	if texture_size.x <= 0.0 or texture_size.y <= 0.0:
+		return max_size
+
+	var scale_value: float = min(max_size.x / texture_size.x, max_size.y / texture_size.y)
+	return texture_size * scale_value
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_RESIZED and is_node_ready():
+		_update_item_layout()

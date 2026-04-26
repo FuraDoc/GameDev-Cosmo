@@ -1,5 +1,7 @@
 extends Control
 
+const ShipDebugPositioningController = preload("res://scripts/ship/ship_debug_positioning_controller.gd")
+
 @onready var storage_background: TextureRect = $StorageBackground
 @onready var items_root: Control = $ItemsRoot
 @onready var tooltip_panel: Panel = $TopInfoContainer/TooltipPanel
@@ -20,6 +22,7 @@ const MIN_SIZE_RATIO := 0.02
 const MAX_SIZE_RATIO := 0.25
 
 var selected_item_id := "interior_plant_001"
+var debug_controller := ShipDebugPositioningController.new()
 var item_nodes: Dictionary = {}
 var item_data: Dictionary = {}
 var cargo_visual_data := {
@@ -29,7 +32,7 @@ var cargo_visual_data := {
 	"interior_plant_004": {"texture_path": "res://assets/items/interior/plant004.png", "anchor_pos": Vector2(0.435, 0.18), "size_ratio": Vector2(0.055, 0.09)},
 	"interior_plant_005": {"texture_path": "res://assets/items/interior/plant005.png", "anchor_pos": Vector2(0.54, 0.18), "size_ratio": Vector2(0.055, 0.09)},
 	"interior_plant_006": {"texture_path": "res://assets/items/interior/plant006.png", "anchor_pos": Vector2(0.645, 0.18), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_007": {"texture_path": "res://assets/items/interior/plant007.png", "anchor_pos": Vector2(0.75, 0.18), "size_ratio": Vector2(0.055, 0.09)},
+	"interior_plant_007": {"texture_path": "res://assets/items/interior/plant007.png", "anchor_pos": Vector2(0.69, 0.22), "size_ratio": Vector2(0.153, 0.25)},
 	"interior_plant_008": {"texture_path": "res://assets/items/interior/plant008.png", "anchor_pos": Vector2(0.855, 0.18), "size_ratio": Vector2(0.055, 0.09)},
 	"interior_plant_009": {"texture_path": "res://assets/items/interior/plant009.png", "anchor_pos": Vector2(0.12, 0.35), "size_ratio": Vector2(0.055, 0.09)},
 	"interior_plant_010": {"texture_path": "res://assets/items/interior/plant010.png", "anchor_pos": Vector2(0.225, 0.35), "size_ratio": Vector2(0.055, 0.09)},
@@ -46,11 +49,11 @@ var cargo_visual_data := {
 	"interior_plant_021": {"texture_path": "res://assets/items/interior/plant021.png", "anchor_pos": Vector2(0.54, 0.52), "size_ratio": Vector2(0.055, 0.09)},
 	"interior_plant_022": {"texture_path": "res://assets/items/interior/plant022.png", "anchor_pos": Vector2(0.645, 0.52), "size_ratio": Vector2(0.055, 0.09)},
 	"interior_plant_023": {"texture_path": "res://assets/items/interior/plant023.png", "anchor_pos": Vector2(0.75, 0.52), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_024": {"texture_path": "res://assets/items/interior/plant024.png", "anchor_pos": Vector2(0.855, 0.52), "size_ratio": Vector2(0.055, 0.09)},
+	"interior_plant_024": {"texture_path": "res://assets/items/interior/plant024.png", "anchor_pos": Vector2(0.715, 0.538), "size_ratio": Vector2(0.60, 0.1)},
 	"interior_plant_025": {"texture_path": "res://assets/items/interior/plant025.png", "anchor_pos": Vector2(0.12, 0.69), "size_ratio": Vector2(0.055, 0.09)},
 	"interior_plant_026": {"texture_path": "res://assets/items/interior/plant026.png", "anchor_pos": Vector2(0.225, 0.69), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_027": {"texture_path": "res://assets/items/interior/plant027.png", "anchor_pos": Vector2(0.33, 0.69), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_028": {"texture_path": "res://assets/items/interior/plant028.png", "anchor_pos": Vector2(0.435, 0.69), "size_ratio": Vector2(0.055, 0.09)},
+	"interior_plant_027": {"texture_path": "res://assets/items/interior/plant027.png", "anchor_pos": Vector2(0.38, 0.7), "size_ratio": Vector2(0.055, 0.09)},
+	"interior_plant_028": {"texture_path": "res://assets/items/interior/plant028.png", "anchor_pos": Vector2(0.435, 0.69), "size_ratio": Vector2(0.114, 0.187)},
 	"interior_plant_029": {"texture_path": "res://assets/items/interior/plant029.png", "anchor_pos": Vector2(0.54, 0.69), "size_ratio": Vector2(0.055, 0.09)},
 	"interior_plant_030": {"texture_path": "res://assets/items/interior/plant030.png", "anchor_pos": Vector2(0.645, 0.69), "size_ratio": Vector2(0.055, 0.09)},
 	"interior_plant_031": {"texture_path": "res://assets/items/interior/plant031.png", "anchor_pos": Vector2(0.75, 0.69), "size_ratio": Vector2(0.055, 0.09)},
@@ -59,7 +62,7 @@ var cargo_visual_data := {
 	"interior_plant_034": {"texture_path": "res://assets/items/interior/plant034.png", "anchor_pos": Vector2(0.225, 0.86), "size_ratio": Vector2(0.055, 0.09)},
 	"interior_plant_035": {"texture_path": "res://assets/items/interior/plant035.png", "anchor_pos": Vector2(0.33, 0.86), "size_ratio": Vector2(0.055, 0.09)},
 	"interior_plant_036": {"texture_path": "res://assets/items/interior/plant036.png", "anchor_pos": Vector2(0.435, 0.86), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_037": {"texture_path": "res://assets/items/interior/plant037.png", "anchor_pos": Vector2(0.54, 0.86), "size_ratio": Vector2(0.055, 0.09)},
+	"interior_plant_037": {"texture_path": "res://assets/items/interior/plant037.png", "anchor_pos": Vector2(0.8, 0.522), "size_ratio": Vector2(0.126, 0.206)},
 	"interior_plant_038": {"texture_path": "res://assets/items/interior/plant038.png", "anchor_pos": Vector2(0.645, 0.86), "size_ratio": Vector2(0.055, 0.09)},
 	"interior_plant_039": {"texture_path": "res://assets/items/interior/plant039.png", "anchor_pos": Vector2(0.75, 0.86), "size_ratio": Vector2(0.055, 0.09)},
 	"interior_plant_040": {"texture_path": "res://assets/items/interior/plant040.png", "anchor_pos": Vector2(0.855, 0.86), "size_ratio": Vector2(0.055, 0.09)}
@@ -69,9 +72,11 @@ var debug_enabled := true
 
 func _ready() -> void:
 	tooltip_panel.visible = false
+	debug_controller.selected_layer = "interior.cargo"
+	debug_controller.selected_item_id = selected_item_id
 	items_root.clip_contents = true
 	items_root.z_index = 0
-	$TopInfoContainer.z_index = 20
+	$TopInfoContainer.z_index = 100
 	_build_item_data()
 	await get_tree().process_frame
 	_create_item_nodes()
@@ -172,6 +177,7 @@ func _show_selected_item_info() -> void:
 
 func _on_item_pressed(item_id: String) -> void:
 	selected_item_id = item_id
+	debug_controller.selected_item_id = item_id
 	refresh()
 
 
@@ -212,69 +218,17 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _handle_debug_cycle_input(event: InputEventKey) -> bool:
-	if event.keycode == KEY_MINUS or event.keycode == KEY_KP_SUBTRACT:
-		_cycle_selected_item(-1)
-		return true
-
-	if event.keycode == KEY_EQUAL or event.keycode == KEY_PLUS or event.keycode == KEY_KP_ADD:
-		_cycle_selected_item(1)
-		return true
-
-	return false
+	var handled := debug_controller._handle_cargo_cycle_input(event, cargo_visual_data)
+	if handled:
+		selected_item_id = debug_controller.selected_item_id
+		refresh()
+	return handled
 
 
 func _handle_debug_transform_input(event: InputEventKey) -> void:
-	if selected_item_id.is_empty():
-		return
-	if not cargo_visual_data.has(selected_item_id):
-		return
-
-	var current_move_step := MOVE_STEP_FINE if event.shift_pressed else MOVE_STEP
-	var current_scale_step := SCALE_STEP_FINE if event.shift_pressed else SCALE_STEP
-
-	var changed := false
-	var anchor_pos: Vector2 = cargo_visual_data[selected_item_id]["anchor_pos"]
-	var size_ratio: Vector2 = cargo_visual_data[selected_item_id]["size_ratio"]
-
-	if event.keycode == KEY_LEFT:
-		anchor_pos.x -= current_move_step
-		changed = true
-	elif event.keycode == KEY_RIGHT:
-		anchor_pos.x += current_move_step
-		changed = true
-	elif event.keycode == KEY_UP:
-		anchor_pos.y -= current_move_step
-		changed = true
-	elif event.keycode == KEY_DOWN:
-		anchor_pos.y += current_move_step
-		changed = true
-	elif event.keycode == KEY_BRACKETLEFT:
-		size_ratio *= (1.0 / current_scale_step)
-		changed = true
-	elif event.keycode == KEY_BRACKETRIGHT:
-		size_ratio *= current_scale_step
-		changed = true
-	elif event.keycode == KEY_P:
-		print_selected_debug_item()
-		return
-
-	if not changed:
-		return
-
-	anchor_pos.x = clamp(anchor_pos.x, 0.0, 1.0)
-	anchor_pos.y = clamp(anchor_pos.y, 0.0, 1.0)
-	size_ratio.x = clamp(size_ratio.x, MIN_SIZE_RATIO, MAX_SIZE_RATIO)
-	size_ratio.y = clamp(size_ratio.y, MIN_SIZE_RATIO, MAX_SIZE_RATIO)
-
-	cargo_visual_data[selected_item_id]["anchor_pos"] = anchor_pos
-	cargo_visual_data[selected_item_id]["size_ratio"] = size_ratio
-	_update_item_layout()
-
-	print(
-		"Updated [interior.cargo] ", selected_item_id,
-		" -> anchor_pos=", anchor_pos,
-		" size_ratio=", size_ratio
-	)
+	debug_controller.handle_cargo_input(event, cargo_visual_data, Callable(self, "_update_item_layout"))
+	selected_item_id = debug_controller.selected_item_id
+	refresh()
 
 
 func _cycle_selected_item(direction: int) -> void:
@@ -291,8 +245,8 @@ func _update_item_layout() -> void:
 	if items_root == null or not is_instance_valid(items_root):
 		return
 
-	var background_size := storage_background.size
-	if background_size.x <= 0.0 or background_size.y <= 0.0:
+	var background_rect := _get_drawn_background_rect(storage_background)
+	if background_rect.size.x <= 0.0 or background_rect.size.y <= 0.0:
 		return
 
 	for item_key in item_nodes.keys():
@@ -304,14 +258,30 @@ func _update_item_layout() -> void:
 		var icon_rect := node.get_node_or_null("Icon") as TextureRect
 		var item_size := _calculate_preserved_item_size(
 			icon_rect.texture if icon_rect != null else null,
-			Vector2(background_size.x * size_ratio.x, background_size.y * size_ratio.y)
+			background_rect.size * size_ratio
 		)
 
+		node.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
 		node.size = item_size
-		node.position = Vector2(
-			background_size.x * anchor_pos.x - item_size.x * 0.5,
-			background_size.y * anchor_pos.y - item_size.y * 0.5
+		node.position = background_rect.position + Vector2(
+			background_rect.size.x * anchor_pos.x - item_size.x * 0.5,
+			background_rect.size.y * anchor_pos.y - item_size.y * 0.5
 		)
+
+
+func _get_drawn_background_rect(background: TextureRect) -> Rect2:
+	var viewport_size := background.size
+	if background.texture == null:
+		return Rect2(Vector2.ZERO, viewport_size)
+
+	var texture_size := background.texture.get_size()
+	if texture_size.x <= 0.0 or texture_size.y <= 0.0 or viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
+		return Rect2(Vector2.ZERO, viewport_size)
+
+	var scale_value: float = max(viewport_size.x / texture_size.x, viewport_size.y / texture_size.y)
+	var drawn_size := texture_size * scale_value
+	var drawn_position := (viewport_size - drawn_size) * 0.5
+	return Rect2(drawn_position, drawn_size)
 
 
 func print_selected_debug_item() -> void:

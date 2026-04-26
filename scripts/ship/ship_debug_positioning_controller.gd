@@ -3,7 +3,7 @@ extends RefCounted
 
 var enabled := true
 
-var selected_layer := "interior.ship" # "interior.ship" / "module" / "pet" / "panel"
+var selected_layer := "module" # "interior.ship" / "module" / "pet" / "panel" / "*.cargo"
 var selected_item_id := "interior_plant_001"
 var selected_pet_zone := 0
 
@@ -15,6 +15,8 @@ var scale_step_fine := 1.01
 
 var min_ratio := 0.01
 var max_ratio := 1.0
+var min_size_ratio := 0.01
+var max_size_ratio := 1.0
 
 
 func handle_input(
@@ -160,6 +162,112 @@ func cycle_ship_interior_item(interior_visual_data: Dictionary, direction: int) 
 	var next_index := posmod(current_index + direction, item_ids.size())
 	selected_item_id = item_ids[next_index]
 	print("Selected [interior.ship]: ", selected_item_id)
+
+
+func handle_cargo_input(event: InputEventKey, visual_data: Dictionary, update_layout_callable: Callable) -> bool:
+	if not enabled:
+		return false
+
+	if _handle_cargo_cycle_input(event, visual_data):
+		return true
+
+	return _handle_cargo_transform_input(event, visual_data, update_layout_callable)
+
+
+func _handle_cargo_cycle_input(event: InputEventKey, visual_data: Dictionary) -> bool:
+	if event.keycode == KEY_MINUS or event.keycode == KEY_KP_SUBTRACT:
+		cycle_cargo_item(visual_data, -1)
+		return true
+
+	if event.keycode == KEY_EQUAL or event.keycode == KEY_PLUS or event.keycode == KEY_KP_ADD:
+		cycle_cargo_item(visual_data, 1)
+		return true
+
+	return false
+
+
+func cycle_cargo_item(visual_data: Dictionary, direction: int) -> void:
+	var item_ids: Array[String] = []
+	for item_id in visual_data.keys():
+		item_ids.append(String(item_id))
+
+	item_ids.sort()
+	if item_ids.is_empty():
+		return
+
+	var current_index := item_ids.find(selected_item_id)
+	if current_index == -1:
+		current_index = 0
+
+	var next_index := posmod(current_index + direction, item_ids.size())
+	selected_item_id = item_ids[next_index]
+	print("Selected [", selected_layer, "]: ", selected_item_id)
+
+
+func _handle_cargo_transform_input(event: InputEventKey, visual_data: Dictionary, update_layout_callable: Callable) -> bool:
+	if not visual_data.has(selected_item_id):
+		return false
+
+	var current_move_step: float = move_step_fine if event.shift_pressed else move_step
+	var current_scale_step: float = scale_step_fine if event.shift_pressed else scale_step
+	var data: Dictionary = visual_data[selected_item_id]
+	var anchor_pos: Vector2 = data["anchor_pos"]
+	var size_ratio: Vector2 = data["size_ratio"]
+	var changed := false
+
+	if event.keycode == KEY_LEFT:
+		anchor_pos.x -= current_move_step
+		changed = true
+	elif event.keycode == KEY_RIGHT:
+		anchor_pos.x += current_move_step
+		changed = true
+	elif event.keycode == KEY_UP:
+		anchor_pos.y -= current_move_step
+		changed = true
+	elif event.keycode == KEY_DOWN:
+		anchor_pos.y += current_move_step
+		changed = true
+	elif event.keycode == KEY_BRACKETLEFT:
+		size_ratio *= (1.0 / current_scale_step)
+		changed = true
+	elif event.keycode == KEY_BRACKETRIGHT:
+		size_ratio *= current_scale_step
+		changed = true
+	elif event.keycode == KEY_P:
+		print_selected_cargo_data(visual_data)
+		return true
+
+	if not changed:
+		return false
+
+	anchor_pos.x = clamp(anchor_pos.x, 0.0, 1.0)
+	anchor_pos.y = clamp(anchor_pos.y, 0.0, 1.0)
+	size_ratio.x = clamp(size_ratio.x, min_size_ratio, max_size_ratio)
+	size_ratio.y = clamp(size_ratio.y, min_size_ratio, max_size_ratio)
+
+	visual_data[selected_item_id]["anchor_pos"] = anchor_pos
+	visual_data[selected_item_id]["size_ratio"] = size_ratio
+	update_layout_callable.call()
+
+	print(
+		"Updated [", selected_layer, "] ", selected_item_id,
+		" -> anchor_pos=", anchor_pos,
+		" size_ratio=", size_ratio
+	)
+	return true
+
+
+func print_selected_cargo_data(visual_data: Dictionary) -> void:
+	if not visual_data.has(selected_item_id):
+		return
+
+	var data: Dictionary = visual_data[selected_item_id]
+	print("\"", selected_item_id, "\": {")
+	if data.has("texture_path"):
+		print("\t\"texture_path\": \"", data["texture_path"], "\",")
+	print("\t\"anchor_pos\": Vector2(", data["anchor_pos"].x, ", ", data["anchor_pos"].y, "),")
+	print("\t\"size_ratio\": Vector2(", data["size_ratio"].x, ", ", data["size_ratio"].y, ")")
+	print("}")
 
 
 func _handle_pet_input(

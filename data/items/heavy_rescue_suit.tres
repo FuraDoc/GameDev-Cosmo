@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://resources/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/equipment/suitheavy.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+item_id = "heavy_rescue_suit"
+title = "Тяжёлый костюм спасателя"
+is_suit = true
+description = "Усиленный аварийно-спасательный скафандр для завалов, разгерметизированных станций и опасных техзон.
+
+Даёт повышенную защиту от радиации, ударов, осколков, высоких температур и жёсткой среды.
+Массивный и неудобный, зато позволяет идти туда, где обычный костюм уже не внушает доверия."
+equipment_texture = ExtResource("2")

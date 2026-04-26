@@ -1,22 +1,14 @@
-[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://cqm6asxidxg0o"]
+[gd_resource type="Resource" script_class="ItemData" format=3]
 
-[ext_resource type="Script" uid="uid://clqkbjc8cvrhj" path="res://resources/item_data.gd" id="1_kdsip"]
-[ext_resource type="Texture2D" uid="uid://b6x5lt81c8s85" path="res://assets/items/ar_visor.png" id="1_vu688"]
+[ext_resource type="Script" path="res://resources/item_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/items/equipment/vizor1.png" id="2"]
 
 [resource]
-script = ExtResource("1_kdsip")
+script = ExtResource("1")
 item_id = "ar_visor"
-title = "Визор-дешифратор дополненной реальности"
-description = "Носимый визор с режимом дополненной реальности.
+title = "Визор дополненной реальности"
+description = "Продвинутые очки под шлем, способные накладывать поверх мира дополнительный слой полезной информации.
 
-Подсвечивает скрытые контуры, усиливает видимость в темноте и помогает распознавать символы, следы и технологические элементы.
-Применение:
-
-осмотр руин;
-чтение надписей;
-поиск скрытых объектов;
-анализ пространства;
-обнаружение слабых сигналов и аномальных структур.
-"
-equipment_texture = ExtResource("1_vu688")
-metadata/_custom_type_script = "uid://clqkbjc8cvrhj"
+Помогают строить маршрут, видеть внутреннюю структуру небольших объектов и находить скрытые свойства окружения.
+Особенно полезны при исследовании помещений, поиске пути, работе с мелкими устройствами и взломе простых систем."
+equipment_texture = ExtResource("2")
