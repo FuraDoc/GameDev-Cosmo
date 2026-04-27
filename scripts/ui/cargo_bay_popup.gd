@@ -1,17 +1,33 @@
 extends Control
 
+# Сигнал закрытия Cargo Bay: ShipScene по нему возвращает вид корабля и HUD.
 signal popup_closed
 
+# Корень содержимого разделов: сюда вставляются панели Снаряжение/Интерьер/Оборудование/Питомцы.
 @onready var content_root: Control = $ContentRoot
+
+# Рамка грузового отсека: прозрачная по центру текстура поверх всех разделов.
 @onready var cargo_frame: TextureRect = $CargoFrame
+
+# Слой кнопок поверх рамки: кнопки приклеены к нормализованным координатам рамки.
 @onready var button_layer: Control = $ButtonLayer
 
+# Кнопка раздела «Снаряжение».
 @onready var equipment_button: Button = $ButtonLayer/EquipmentButton
+
+# Кнопка раздела «Интерьер».
 @onready var interior_button: Button = $ButtonLayer/InteriorButton
+
+# Кнопка раздела «Оборудование».
 @onready var hardware_button: Button = $ButtonLayer/HardwareButton
+
+# Кнопка раздела «Питомцы».
 @onready var pets_button: Button = $ButtonLayer/PetsButton
+
+# Кнопка закрытия грузового отсека.
 @onready var close_button: Button = $ButtonLayer/CloseButton
 
+# Сцены разделов Cargo Bay: ключ current_section выбирает, какую панель инстанцировать.
 const SECTION_SCENES := {
 	"equipment": preload("res://scenes/ui/cargo_equipment_panel.tscn"),
 	"interior": preload("res://scenes/ui/cargo_interior_panel.tscn"),
@@ -19,6 +35,7 @@ const SECTION_SCENES := {
 	"pets": preload("res://scenes/ui/cargo_pets_panel.tscn"),
 }
 
+# Порядок кнопок для debug-переключения -/+.
 const BUTTON_ORDER: Array[String] = [
 	"equipment",
 	"interior",
@@ -27,19 +44,34 @@ const BUTTON_ORDER: Array[String] = [
 	"close",
 ]
 
+# Обычный шаг движения debug-кнопок в нормализованных координатах рамки.
 const MOVE_STEP := 0.002
+
+# Тонкий шаг движения debug-кнопок при зажатом Shift.
 const MOVE_STEP_FINE := 0.0005
+
+# Обычный шаг изменения размера debug-кнопок.
 const SIZE_STEP := 0.002
+
+# Тонкий шаг изменения размера debug-кнопок при зажатом Shift.
 const SIZE_STEP_FINE := 0.0005
+
+# Минимальный размер кнопки, чтобы debug-режим не сделал ее невидимой.
 const MIN_BUTTON_SIZE := Vector2(0.02, 0.02)
 
+# Текущий открытый раздел Cargo Bay.
 var current_section: String = "equipment"
+
+# Включатель debug-позиционирования кнопок; сейчас специально выключен, чтобы не мешал предметам.
 var debug_buttons_enabled := false
+
+# ID выбранной для debug кнопки.
 var debug_selected_button_id := "equipment"
 
+# Словарь ID -> Button, чтобы layout мог обработать все кнопки одинаково.
 var button_nodes: Dictionary = {}
 
-# Rect2 values are normalized frame-texture coordinates: 0..1 across the source frame.
+# Rect2 в нормализованных координатах рамки: position — левый верх, size — ширина/высота.
 var button_rects := {
 	"equipment": Rect2(Vector2(0.281, 0.037), Vector2(0.095, 0.044)),
 	"interior": Rect2(Vector2(0.396, 0.037), Vector2(0.095, 0.043)),
@@ -49,6 +81,7 @@ var button_rects := {
 }
 
 
+# _ready — «готово»: растягивает окно, подключает кнопки и открывает стартовый раздел.
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	z_index = 100
@@ -87,6 +120,7 @@ func _ready() -> void:
 	show_section("equipment")
 
 
+# show_section — «показать раздел»: меняет current_section, состояние кнопок и содержимое.
 func show_section(section_id: String) -> void:
 	if not SECTION_SCENES.has(section_id):
 		return
@@ -96,6 +130,7 @@ func show_section(section_id: String) -> void:
 	_rebuild_content()
 
 
+# _update_section_buttons — «обновить кнопки разделов»: отключает кнопку текущего раздела.
 func _update_section_buttons() -> void:
 	equipment_button.disabled = current_section == "equipment"
 	interior_button.disabled = current_section == "interior"
@@ -104,6 +139,7 @@ func _update_section_buttons() -> void:
 	close_button.disabled = false
 
 
+# _rebuild_content — «пересобрать содержимое»: удаляет старую панель и создает новую.
 func _rebuild_content() -> void:
 	for child in content_root.get_children():
 		child.free()
@@ -116,11 +152,13 @@ func _rebuild_content() -> void:
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 
 
+# _notification — «уведомление»: при изменении размера пересчитывает кнопки по рамке.
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_RESIZED and is_node_ready():
 		_update_button_layout()
 
 
+# _update_button_layout — «обновить раскладку кнопок»: приклеивает кнопки к drawn rect рамки.
 func _update_button_layout() -> void:
 	var frame_rect := _get_drawn_frame_rect()
 	if frame_rect.size.x <= 0.0 or frame_rect.size.y <= 0.0:
@@ -136,6 +174,7 @@ func _update_button_layout() -> void:
 		button.focus_mode = Control.FOCUS_NONE
 
 
+# _get_drawn_frame_rect — «получить нарисованный прямоугольник рамки»: учитывает cover-масштаб.
 func _get_drawn_frame_rect() -> Rect2:
 	var viewport_size := size
 	if cargo_frame.texture == null:
@@ -151,6 +190,7 @@ func _get_drawn_frame_rect() -> Rect2:
 	return Rect2(drawn_position, drawn_size)
 
 
+# _unhandled_input — «необработанный ввод»: Escape закрывает окно, debug-клавиши двигают кнопки.
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		close_popup()
@@ -174,6 +214,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
+# _handle_debug_cycle_input — «обработать debug-переключение»: -/+ выбирают кнопку.
 func _handle_debug_cycle_input(event: InputEventKey) -> bool:
 	if event.keycode == KEY_MINUS or event.keycode == KEY_KP_SUBTRACT:
 		_cycle_debug_button(-1)
@@ -186,6 +227,7 @@ func _handle_debug_cycle_input(event: InputEventKey) -> bool:
 	return false
 
 
+# _handle_debug_transform_input — «обработать debug-трансформацию»: двигает и меняет размер кнопки.
 func _handle_debug_transform_input(event: InputEventKey) -> bool:
 	if not button_rects.has(debug_selected_button_id):
 		return false
@@ -233,6 +275,7 @@ func _handle_debug_transform_input(event: InputEventKey) -> bool:
 	return true
 
 
+# _cycle_debug_button — «переключить debug-кнопку»: выбирает следующий ID из BUTTON_ORDER.
 func _cycle_debug_button(direction: int) -> void:
 	var current_index := BUTTON_ORDER.find(debug_selected_button_id)
 	if current_index == -1:
@@ -243,6 +286,7 @@ func _cycle_debug_button(direction: int) -> void:
 	print("Selected [cargo_button]: ", debug_selected_button_id)
 
 
+# _print_debug_button_rect — «напечатать debug-прямоугольник кнопки»: выводит готовый Rect2.
 func _print_debug_button_rect() -> void:
 	var rect: Rect2 = button_rects[debug_selected_button_id]
 	print("\"", debug_selected_button_id, "\": Rect2(")
@@ -251,6 +295,7 @@ func _print_debug_button_rect() -> void:
 	print("),")
 
 
+# close_popup — «закрыть popup»: сообщает сцене и удаляет окно грузового отсека.
 func close_popup() -> void:
 	popup_closed.emit()
 	queue_free()

@@ -1,24 +1,44 @@
 class_name ShipDebugPositioningController
 extends RefCounted
 
+# Включатель debug-позиционирования: false полностью отключает обработку клавиш.
 var enabled := true
 
+# Выбранный слой для ручной настройки: корабль, модуль, питомец, панель или Cargo Bay.
 var selected_layer := "module" # "interior.ship" / "module" / "pet" / "panel" / "*.cargo"
+
+# Выбранный item_id: именно этот визуальный объект двигается стрелками и масштабируется.
 var selected_item_id := "interior_plant_001"
+
+# Выбранная зона питомца: индекс варианта позиции/текстуры внутри pet_visual_data.
 var selected_pet_zone := 0
 
+# Обычный шаг движения в нормализованных координатах 0..1.
 var move_step := 0.01
+
+# Тонкий шаг движения при зажатом Shift.
 var move_step_fine := 0.001
 
+# Обычный множитель размера/масштаба при нажатии [ или ].
 var scale_step := 1.05
+
+# Тонкий множитель размера/масштаба при зажатом Shift.
 var scale_step_fine := 1.01
 
+# Минимальный ratio для старых ship-элементов, чтобы они не схлопнулись в ноль.
 var min_ratio := 0.01
+
+# Максимальный ratio для старых ship-элементов, чтобы размер не улетел за разумный предел.
 var max_ratio := 1.0
+
+# Минимальный size_ratio для Cargo-элементов, которые задаются шириной и высотой.
 var min_size_ratio := 0.01
+
+# Максимальный size_ratio для Cargo-элементов, которые задаются шириной и высотой.
 var max_size_ratio := 1.0
 
 
+# handle_input — «обработать ввод»: распределяет клавиши по выбранному debug-слою корабля.
 func handle_input(
 	event: InputEventKey,
 	module_layer_controller,
@@ -76,6 +96,7 @@ func handle_input(
 		return
 
 
+# print_selected_data — «напечатать выбранные данные»: выводит координаты ship-объекта в консоль.
 func print_selected_data(
 	module_layer_controller,
 	pet_layer_controller,
@@ -146,6 +167,7 @@ func print_selected_data(
 		print("---------------------------")
 
 
+# cycle_ship_interior_item — «переключить предмет интерьера корабля»: листает item_id интерьера.
 func cycle_ship_interior_item(interior_visual_data: Dictionary, direction: int) -> void:
 	var item_ids: Array[String] = []
 	for item_id in interior_visual_data.keys():
@@ -164,6 +186,7 @@ func cycle_ship_interior_item(interior_visual_data: Dictionary, direction: int) 
 	print("Selected [interior.ship]: ", selected_item_id)
 
 
+# handle_cargo_input — «обработать ввод Cargo»: двигает/масштабирует предметы внутри разделов склада.
 func handle_cargo_input(event: InputEventKey, visual_data: Dictionary, update_layout_callable: Callable) -> bool:
 	if not enabled:
 		return false
@@ -174,6 +197,7 @@ func handle_cargo_input(event: InputEventKey, visual_data: Dictionary, update_la
 	return _handle_cargo_transform_input(event, visual_data, update_layout_callable)
 
 
+# _handle_cargo_cycle_input — «обработать переключение Cargo»: -/+ выбирают соседний item_id.
 func _handle_cargo_cycle_input(event: InputEventKey, visual_data: Dictionary) -> bool:
 	if event.keycode == KEY_MINUS or event.keycode == KEY_KP_SUBTRACT:
 		cycle_cargo_item(visual_data, -1)
@@ -186,6 +210,7 @@ func _handle_cargo_cycle_input(event: InputEventKey, visual_data: Dictionary) ->
 	return false
 
 
+# cycle_cargo_item — «переключить предмет Cargo»: сортирует ключи и выбирает следующий/предыдущий.
 func cycle_cargo_item(visual_data: Dictionary, direction: int) -> void:
 	var item_ids: Array[String] = []
 	for item_id in visual_data.keys():
@@ -204,6 +229,7 @@ func cycle_cargo_item(visual_data: Dictionary, direction: int) -> void:
 	print("Selected [", selected_layer, "]: ", selected_item_id)
 
 
+# _handle_cargo_transform_input — «обработать трансформацию Cargo»: меняет anchor_pos и size_ratio.
 func _handle_cargo_transform_input(event: InputEventKey, visual_data: Dictionary, update_layout_callable: Callable) -> bool:
 	if not visual_data.has(selected_item_id):
 		return false
@@ -257,6 +283,7 @@ func _handle_cargo_transform_input(event: InputEventKey, visual_data: Dictionary
 	return true
 
 
+# print_selected_cargo_data — «напечатать данные Cargo»: выводит готовый фрагмент словаря.
 func print_selected_cargo_data(visual_data: Dictionary) -> void:
 	if not visual_data.has(selected_item_id):
 		return
@@ -270,6 +297,7 @@ func print_selected_cargo_data(visual_data: Dictionary) -> void:
 	print("}")
 
 
+# _handle_pet_input — «обработать ввод питомца»: двигает текущую зону питомца в кокпите.
 func _handle_pet_input(
 	event: InputEventKey,
 	pet_layer_controller,
@@ -364,6 +392,7 @@ func _handle_pet_input(
 		)
 
 
+# _handle_module_input — «обработать ввод модуля»: двигает и масштабирует модуль на слое кокпита.
 func _handle_module_input(
 	event: InputEventKey,
 	module_layer_controller,
@@ -422,6 +451,7 @@ func _handle_module_input(
 		)
 
 
+# _handle_interior_input — «обработать ввод интерьера»: двигает интерьер корабля и меняет зону 1-8.
 func _handle_interior_input(
 	event: InputEventKey,
 	interior_visual_data: Dictionary,
@@ -488,6 +518,7 @@ func _handle_interior_input(
 		)
 
 
+# _handle_panel_input — «обработать ввод панели»: двигает и масштабирует декоративные панели кокпита.
 func _handle_panel_input(
 	event: InputEventKey,
 	panel_visual_data: Dictionary,
@@ -542,6 +573,7 @@ func _handle_panel_input(
 		)
 
 
+# _set_pet_zone — «задать зону питомца»: выбирает индекс зоны и сразу обновляет слой питомцев.
 func _set_pet_zone(
 	zone_index: int,
 	pet_layer_controller,

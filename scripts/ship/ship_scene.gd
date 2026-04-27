@@ -10,22 +10,33 @@ extends Control
 # - текущее состояние квеста через QuestRuntime
 # =========================================================
 
+# Визуальный контроллер корабля: отвечает за фон космоса, кокпит, слои и перископ.
 @onready var view_controller = $ViewportRoot
+
+# Контроллер приключений: хранит список локаций, фон и путь к JSON-квесту.
 @onready var adventure_controller = $AdventureController
+
+# UI-контроллер корабля: кнопки HUD, fade, окна квеста и Cargo Bay.
 @onready var ui_controller = $UI
 
+# Флаг перехода между приключениями: защищает от повторного нажатия во время fade.
 var is_transitioning := false
+
+# Флаг перехода перископа: защищает от повторного Space во время анимации.
 var is_periscope_transitioning := false
 
+# Сцена полноэкранного грузового отсека: инстанцируется при нажатии кнопки Cargo Bay.
 var cargo_bay_popup_scene = preload("res://scenes/ui/cargo_bay_popup.tscn")
 
 
+# _ready — «готово»: подключает UI, показывает текущую локацию и настраивает квест.
 func _ready():
 	connect_ui_signals()
 	show_current_adventure()
 	setup_current_adventure_quest_state()
 
 
+# _unhandled_input — «необработанный ввод»: Space включает/выключает режим перископа.
 func _unhandled_input(event: InputEvent) -> void:
 	if not (event is InputEventKey):
 		return
@@ -45,6 +56,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	toggle_periscope_mode()
 
 
+# connect_ui_signals — «подключить сигналы UI»: связывает кнопки HUD с методами сцены.
 func connect_ui_signals() -> void:
 	ui_controller.menu_requested.connect(_on_menu_requested)
 	ui_controller.next_adventure_requested.connect(_on_next_adventure_requested)
@@ -53,6 +65,7 @@ func connect_ui_signals() -> void:
 	ui_controller.cargo_bay_requested.connect(_on_cargo_bay_requested)
 
 
+# _on_cargo_bay_requested — «запрошен грузовой отсек»: открывает fullscreen Cargo Bay popup.
 func _on_cargo_bay_requested() -> void:
 	ui_controller.set_main_buttons_enabled(false)
 	view_controller.visible = false
@@ -64,12 +77,14 @@ func _on_cargo_bay_requested() -> void:
 	
 	popup.popup_closed.connect(_on_cargo_bay_closed)
 	
-	
+
+# _on_cargo_bay_closed — «грузовой отсек закрыт»: возвращает вид корабля и кнопки HUD.
 func _on_cargo_bay_closed() -> void:
 	view_controller.visible = true
 	ui_controller.set_main_buttons_enabled(true)
 
 
+# show_current_adventure — «показать текущее приключение»: ставит фон космоса текущей локации.
 func show_current_adventure() -> void:
 	var background_path = adventure_controller.get_current_background_path()
 	
@@ -81,9 +96,8 @@ func show_current_adventure() -> void:
 	adventure_controller.debug_print_current_adventure()
 
 
+# setup_current_adventure_quest_state — «настроить состояние квеста»: сбрасывает QuestRuntime.
 func setup_current_adventure_quest_state() -> void:
-	# Каждый раз, когда мы оказываемся в новой локации,
-	# инициализируем состояние ее квеста.
 	var adventure_id = adventure_controller.get_current_adventure_id()
 	var quest_path = adventure_controller.get_current_quest_path()
 	
@@ -99,10 +113,12 @@ func setup_current_adventure_quest_state() -> void:
 	ui_controller.update_quest_buttons()
 
 
+# _on_menu_requested — «запрошено меню»: возвращает игрока в main_scene.
 func _on_menu_requested() -> void:
 	get_tree().change_scene_to_file("res://scenes/main/main_scene.tscn")
 
 
+# _on_text_quest_requested — «запрошен текстовый квест»: открывает квест с начала.
 func _on_text_quest_requested() -> void:
 	var quest_path = adventure_controller.get_current_quest_path()
 	
@@ -114,6 +130,7 @@ func _on_text_quest_requested() -> void:
 	ui_controller.update_quest_buttons()
 
 
+# _on_continue_quest_requested — «запрошено продолжение квеста»: открывает сохраненный узел.
 func _on_continue_quest_requested() -> void:
 	var quest_path = adventure_controller.get_current_quest_path()
 	
@@ -128,6 +145,7 @@ func _on_continue_quest_requested() -> void:
 	ui_controller.update_quest_buttons()
 
 
+# _on_next_adventure_requested — «запрошено следующее приключение»: показывает подтверждение.
 func _on_next_adventure_requested() -> void:
 	if is_transitioning:
 		return
@@ -142,6 +160,7 @@ func _on_next_adventure_requested() -> void:
 	ui_controller.confirm_next_adventure(confirm_message, Callable(self, "_confirm_and_start_next_adventure"))
 
 
+# _confirm_and_start_next_adventure — «подтвердить и начать следующее приключение»: делает прыжок.
 func _confirm_and_start_next_adventure() -> void:
 	if is_transitioning:
 		return
@@ -157,6 +176,7 @@ func _confirm_and_start_next_adventure() -> void:
 	is_transitioning = false
 
 
+# toggle_periscope_mode — «переключить режим перископа»: fade, скрытие HUD и смена вида.
 func toggle_periscope_mode() -> void:
 	if is_periscope_transitioning:
 		return

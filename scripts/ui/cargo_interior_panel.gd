@@ -1,31 +1,75 @@
 extends Control
 
+# Подключаем общий debug-контроллер: он двигает предметы Cargo по anchor_pos и size_ratio.
 const ShipDebugPositioningController = preload("res://scripts/ship/ship_debug_positioning_controller.gd")
 
+# Фон раздела «Интерьер»: по нему считается drawn rect для привязки предметов.
 @onready var storage_background: TextureRect = $StorageBackground
+
+# Корень предметов: сюда создаются кнопки-иконки интерьера.
 @onready var items_root: Control = $ItemsRoot
+
+# Панель описания выбранного предмета.
 @onready var tooltip_panel: Panel = $TopInfoContainer/TooltipPanel
+
+# Заголовок popup-окна: название выбранного предмета.
 @onready var item_name_label: Label = $TopInfoContainer/TooltipPanel/VBoxContainer/ItemNameLabel
+
+# Текст popup-окна: описание и текущий статус установки.
 @onready var item_description_label: Label = $TopInfoContainer/TooltipPanel/VBoxContainer/ItemDescriptionLabel
+
+# Кнопка действия popup-окна: «Установить» или «Убрать».
 @onready var action_button: Button = $TopInfoContainer/TooltipPanel/VBoxContainer/ActionButton
 
+# Количество предметов интерьера: item_id строятся от interior_plant_001 до _040.
 const ITEM_COUNT := 40
+
+# Яркость выбранного предмета.
 const SELECTED_BRIGHTNESS := 1.2
+
+# Яркость обычного предмета.
 const NORMAL_BRIGHTNESS := 1.0
+
+# Прозрачность уже установленного предмета.
 const INSTALLED_ALPHA := 0.5
+
+# Прозрачность обычного предмета.
 const NORMAL_ALPHA := 1.0
+
+# Debug-шаг движения, оставлен рядом с панелью для быстрой настройки.
 const MOVE_STEP := 0.01
+
+# Debug-тонкий шаг движения.
 const MOVE_STEP_FINE := 0.001
+
+# Debug-множитель размера.
 const SCALE_STEP := 1.05
+
+# Debug-тонкий множитель размера.
 const SCALE_STEP_FINE := 1.01
+
+# Минимальный size_ratio предмета в Cargo.
 const MIN_SIZE_RATIO := 0.02
+
+# Максимальный size_ratio предмета в Cargo.
 const MAX_SIZE_RATIO := 0.25
 
+# Выбранный предмет интерьера: используется popup-окном и debug-позиционированием.
 var selected_item_id := "interior_plant_001"
+
+# Экземпляр общего debug-контроллера для движения предметов на фоне раздела.
 var debug_controller := ShipDebugPositioningController.new()
+
+# Словарь item_id -> Button, чтобы обновлять позиции и визуальное состояние.
 var item_nodes: Dictionary = {}
+
+# Словарь описаний предметов: title и description для popup-окна.
 var item_data: Dictionary = {}
+
+# Позиция и размер popup-окна в координатах фона: 0..1 от drawn rect background.
 var info_popup_rect := Rect2(Vector2(0.360, 0.095), Vector2(0.280, 0.19))
+
+# Визуальные данные предметов Cargo: путь к текстуре, центр anchor_pos и размер size_ratio.
 var cargo_visual_data := {
 	"interior_plant_001": {"texture_path": "res://assets/items/interior/plant001.png", "anchor_pos": Vector2(0.16, 0.857), "size_ratio": Vector2(0.138982, 0.227425)},
 	"interior_plant_002": {"texture_path": "res://assets/items/interior/plant002.png", "anchor_pos": Vector2(0.266, 0.784), "size_ratio": Vector2(0.226387, 0.370452)},
@@ -68,9 +112,12 @@ var cargo_visual_data := {
 	"interior_plant_039": {"texture_path": "res://assets/items/interior/plant039.png", "anchor_pos": Vector2(0.432, 0.668), "size_ratio": Vector2(0.060637, 0.099225)},
 	"interior_plant_040": {"texture_path": "res://assets/items/interior/plant040.png", "anchor_pos": Vector2(0.396, 0.297), "size_ratio": Vector2(0.073705, 0.120609)}
 }
+
+# Включатель debug-позиционирования предметов интерьера в Cargo.
 var debug_enabled := true
 
 
+# _ready — «готово»: настраивает popup, debug-контроллер, создает предметы и подключает сигналы.
 func _ready() -> void:
 	tooltip_panel.visible = false
 	tooltip_panel.clip_contents = true
@@ -98,6 +145,7 @@ func _ready() -> void:
 	refresh()
 
 
+# _build_item_data — «построить данные предметов»: создает временные названия и описания.
 func _build_item_data() -> void:
 	item_data.clear()
 	for i in range(1, ITEM_COUNT + 1):
@@ -108,6 +156,7 @@ func _build_item_data() -> void:
 		}
 
 
+# _create_item_nodes — «создать узлы предметов»: строит кнопки с TextureRect для всех растений.
 func _create_item_nodes() -> void:
 	item_nodes.clear()
 
@@ -146,6 +195,7 @@ func _create_item_nodes() -> void:
 	_update_item_layout()
 
 
+# refresh — «обновить»: применяет selected/installed-состояние и показывает popup.
 func refresh() -> void:
 	for item_key in item_nodes.keys():
 		var item_id := String(item_key)
@@ -161,12 +211,14 @@ func refresh() -> void:
 	_show_selected_item_info()
 
 
+# _apply_item_visual_state — «применить визуальное состояние»: яркость выбранного и alpha installed.
 func _apply_item_visual_state(node: Control, is_selected: bool, installed: bool) -> void:
 	var brightness := SELECTED_BRIGHTNESS if is_selected else NORMAL_BRIGHTNESS
 	var alpha := INSTALLED_ALPHA if installed else NORMAL_ALPHA
 	node.modulate = Color(brightness, brightness, brightness, alpha)
 
 
+# _show_selected_item_info — «показать информацию выбранного»: заполняет popup и кнопку действия.
 func _show_selected_item_info() -> void:
 	var data: Dictionary = item_data.get(selected_item_id, {})
 	var zone_id: int = PlayerState.get_interior_item_zone(selected_item_id)
@@ -187,12 +239,14 @@ func _show_selected_item_info() -> void:
 	call_deferred("_update_popup_layout")
 
 
+# _on_item_pressed — «нажат предмет»: выбирает item_id, синхронизирует debug и обновляет UI.
 func _on_item_pressed(item_id: String) -> void:
 	selected_item_id = item_id
 	debug_controller.selected_item_id = item_id
 	refresh()
 
 
+# _on_action_button_pressed — «нажата кнопка действия»: устанавливает или снимает интерьер.
 func _on_action_button_pressed() -> void:
 	if selected_item_id.is_empty():
 		return
@@ -207,10 +261,12 @@ func _on_action_button_pressed() -> void:
 	refresh()
 
 
+# _on_player_interior_changed — «изменился интерьер игрока»: полностью обновляет панель.
 func _on_player_interior_changed() -> void:
 	refresh()
 
 
+# _unhandled_input — «необработанный ввод»: пропускает debug-клавиши для текущей панели.
 func _unhandled_input(event: InputEvent) -> void:
 	if not debug_enabled:
 		return
@@ -229,6 +285,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	_handle_debug_transform_input(key_event)
 
 
+# _handle_debug_cycle_input — «обработать debug-переключение»: -/+ выбирают следующий предмет.
 func _handle_debug_cycle_input(event: InputEventKey) -> bool:
 	var handled := debug_controller._handle_cargo_cycle_input(event, cargo_visual_data)
 	if handled:
@@ -237,12 +294,14 @@ func _handle_debug_cycle_input(event: InputEventKey) -> bool:
 	return handled
 
 
+# _handle_debug_transform_input — «обработать debug-трансформацию»: двигает и масштабирует предмет.
 func _handle_debug_transform_input(event: InputEventKey) -> void:
 	debug_controller.handle_cargo_input(event, cargo_visual_data, Callable(self, "_update_item_layout"))
 	selected_item_id = debug_controller.selected_item_id
 	refresh()
 
 
+# _cycle_selected_item — «переключить выбранный предмет»: старый локальный переключатель по индексу.
 func _cycle_selected_item(direction: int) -> void:
 	var current_index := _index_from_item_id(selected_item_id)
 	var next_index := posmod(current_index + direction, ITEM_COUNT)
@@ -251,6 +310,7 @@ func _cycle_selected_item(direction: int) -> void:
 	print("Selected [interior.cargo]: ", selected_item_id)
 
 
+# _update_item_layout — «обновить раскладку предметов»: приклеивает иконки к drawn rect фона.
 func _update_item_layout() -> void:
 	if storage_background == null or not is_instance_valid(storage_background):
 		return
@@ -283,6 +343,7 @@ func _update_item_layout() -> void:
 	_update_popup_layout()
 
 
+# _update_popup_layout — «обновить раскладку popup»: ставит окно описания по info_popup_rect.
 func _update_popup_layout() -> void:
 	var background_rect := _get_drawn_background_rect(storage_background)
 	if background_rect.size.x <= 0.0 or background_rect.size.y <= 0.0:
@@ -311,6 +372,7 @@ func _update_popup_layout() -> void:
 		vbox.offset_bottom = -12.0
 
 
+# _get_drawn_background_rect — «получить нарисованный прямоугольник фона»: учитывает cover-растяжение.
 func _get_drawn_background_rect(background: TextureRect) -> Rect2:
 	if background == null or not is_instance_valid(background):
 		return Rect2()
@@ -329,6 +391,7 @@ func _get_drawn_background_rect(background: TextureRect) -> Rect2:
 	return Rect2(drawn_position, drawn_size)
 
 
+# print_selected_debug_item — «напечатать выбранный debug-предмет»: выводит словарь координат.
 func print_selected_debug_item() -> void:
 	if not cargo_visual_data.has(selected_item_id):
 		return
@@ -341,20 +404,24 @@ func print_selected_debug_item() -> void:
 	print("}")
 
 
+# _notification — «уведомление»: при resize пересчитывает предметы и popup.
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_RESIZED:
 		_update_item_layout()
 		_update_popup_layout()
 
 
+# _item_id_from_index — «ID предмета по индексу»: строит interior_plant_001..040.
 func _item_id_from_index(index: int) -> String:
 	return "interior_plant_%03d" % (index + 1)
 
 
+# _texture_path_from_index — «путь текстуры по индексу»: строит путь plant001.png..plant040.png.
 func _texture_path_from_index(index: int) -> String:
 	return "res://assets/items/interior/plant%03d.png" % (index + 1)
 
 
+# _index_from_item_id — «индекс из ID предмета»: достает номер из последней части строки.
 func _index_from_item_id(item_id: String) -> int:
 	var parts := item_id.split("_")
 	if parts.size() == 0:
@@ -362,6 +429,7 @@ func _index_from_item_id(item_id: String) -> int:
 	return clamp(int(parts[parts.size() - 1]) - 1, 0, ITEM_COUNT - 1)
 
 
+# _calculate_preserved_item_size — «рассчитать сохраненный размер»: вписывает текстуру без искажения.
 func _calculate_preserved_item_size(texture: Texture2D, max_size: Vector2) -> Vector2:
 	if texture == null:
 		return max_size

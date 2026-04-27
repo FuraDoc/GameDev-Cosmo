@@ -15,30 +15,35 @@ extends Node
 # один слот = один json-файл в user://
 # =========================================================
 
+# Максимальное количество слотов сохранения, которое показывает экран новой/продолженной игры.
 const MAX_SLOTS := 3
 
-# Папка сохранений внутри user://
+# Папка сохранений внутри user://, Godot сам хранит ее в пользовательских данных проекта.
 const SAVE_DIR := "user://saves/"
 
 
+# _ready — «готово»: при старте автозагрузки убеждается, что папка сохранений создана.
 func _ready():
-	# При старте убеждаемся, что папка сохранений существует.
 	_ensure_save_dir()
 
 
+# _ensure_save_dir — «убедиться, что папка сохранений есть»: создает каталог, если его нет.
 func _ensure_save_dir() -> void:
 	if not DirAccess.dir_exists_absolute(SAVE_DIR):
 		DirAccess.make_dir_recursive_absolute(SAVE_DIR)
 
 
+# get_slot_path — «получить путь слота»: собирает полный путь json-файла по номеру слота.
 func get_slot_path(slot_id: int) -> String:
 	return SAVE_DIR + "slot_%d.json" % slot_id
 
 
+# slot_exists — «слот существует»: проверяет, есть ли файл сохранения для указанного слота.
 func slot_exists(slot_id: int) -> bool:
 	return FileAccess.file_exists(get_slot_path(slot_id))
 
 
+# has_any_save — «есть любое сохранение»: ищет хотя бы один заполненный слот.
 func has_any_save() -> bool:
 	for slot_id in range(1, MAX_SLOTS + 1):
 		if slot_exists(slot_id):
@@ -46,10 +51,9 @@ func has_any_save() -> bool:
 	return false
 
 
+# get_all_slots_summary — «получить сводку всех слотов»: дает UI данные по каждому слоту.
 func get_all_slots_summary() -> Array[Dictionary]:
-	# Возвращает краткую информацию по всем слотам.
-	# Даже если слот пустой, возвращаем запись о нем,
-	# чтобы UI всегда мог показать все 3 слота.
+	# Даже если слот пустой, возвращаем запись о нем, чтобы UI всегда показывал все 3 слота.
 	var result: Array[Dictionary] = []
 	
 	for slot_id in range(1, MAX_SLOTS + 1):
@@ -76,9 +80,9 @@ func get_all_slots_summary() -> Array[Dictionary]:
 	return result
 
 
+# create_new_game — «создать новую игру»: собирает стартовые данные и записывает слот.
 func create_new_game(slot_id: int, pilot_name: String) -> Dictionary:
-	# Создаем новое сохранение "с нуля".
-	# Пока стартуем с первого приключения.
+	# Пока стартуем с первого приключения и выдаем стандартный костюм как базовый предмет.
 	var save_data := {
 		"slot_id": slot_id,
 		"pilot_name": pilot_name.strip_edges(),
@@ -94,6 +98,7 @@ func create_new_game(slot_id: int, pilot_name: String) -> Dictionary:
 	return save_data
 
 
+# save_slot — «сохранить слот»: записывает словарь сохранения в json-файл.
 func save_slot(slot_id: int, data: Dictionary) -> void:
 	var path = get_slot_path(slot_id)
 	var file = FileAccess.open(path, FileAccess.WRITE)
@@ -106,6 +111,7 @@ func save_slot(slot_id: int, data: Dictionary) -> void:
 	file.store_string(json_text)
 
 
+# load_slot — «загрузить слот»: читает json-файл и возвращает словарь данных сохранения.
 func load_slot(slot_id: int) -> Dictionary:
 	var path = get_slot_path(slot_id)
 	
@@ -128,6 +134,7 @@ func load_slot(slot_id: int) -> Dictionary:
 	return json.data
 
 
+# delete_slot — «удалить слот»: стирает файл сохранения, если он существует.
 func delete_slot(slot_id: int) -> void:
 	var path = get_slot_path(slot_id)
 	

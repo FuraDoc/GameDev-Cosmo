@@ -5,11 +5,7 @@ extends Node
 # Его задача — хранить список приключений и отдавать текущее активное приключение.
 
 
-# Список приключений.
-# Каждый элемент — это словарь:
-# - background: путь к изображению космоса
-# - quest: путь к JSON текстового квеста
-
+# Список приключений: каждый словарь хранит id, title, background и quest для локации.
 var adventures = [
 	{
 		"id": "signal_derelict",
@@ -55,6 +51,7 @@ var adventures = [
 	}
 ]
 
+# get_current_adventure_id — «получить ID текущего приключения»: читает id активной локации.
 func get_current_adventure_id() -> String:
 	var adventure = get_current_adventure()
 	if adventure.is_empty():
@@ -62,21 +59,20 @@ func get_current_adventure_id() -> String:
 	
 	return adventure.get("id", "")
 
-# Индекс текущего приключения в массиве adventures
+# Индекс текущего приключения в массиве adventures: меняется при переходе к следующей локации.
 var current_adventure_index: int = 0
 
 
+# get_current_adventure — «получить текущее приключение»: возвращает словарь активной локации.
 func get_current_adventure() -> Dictionary:
-	# Возвращает словарь текущего приключения.
-	# Если список пустой, возвращаем пустой словарь, чтобы не словить ошибку.
 	if adventures.is_empty():
 		return {}
 	
 	return adventures[current_adventure_index]
 
 
+# get_current_background_path — «получить путь текущего фона»: отдает картинку космоса.
 func get_current_background_path() -> String:
-	# Возвращает путь к текущему фону космоса.
 	var adventure = get_current_adventure()
 	if adventure.is_empty():
 		return ""
@@ -84,8 +80,8 @@ func get_current_background_path() -> String:
 	return adventure.get("background", "")
 
 
+# get_current_quest_path — «получить путь текущего квеста»: отдает путь к JSON квеста.
 func get_current_quest_path() -> String:
-	# Возвращает путь к текущему JSON-квесту.
 	var adventure = get_current_adventure()
 	if adventure.is_empty():
 		return ""
@@ -93,9 +89,8 @@ func get_current_quest_path() -> String:
 	return adventure.get("quest", "")
 
 
+# go_to_next_adventure — «перейти к следующему приключению»: циклически меняет активный индекс.
 func go_to_next_adventure() -> void:
-	# Переключаем индекс на следующее приключение.
-	# Если дошли до конца массива — начинаем снова с нуля.
 	if adventures.is_empty():
 		return
 	
@@ -105,9 +100,8 @@ func go_to_next_adventure() -> void:
 		current_adventure_index = 0
 
 
+# debug_print_current_adventure — «debug-печать текущего приключения»: выводит индекс, фон и квест.
 func debug_print_current_adventure() -> void:
-	# Небольшой служебный вывод для отладки.
-	# Удобно во время разработки.
 	print("Текущий индекс приключения: ", current_adventure_index)
 	print("Текущий фон: ", get_current_background_path())
 	print("Текущий квест: ", get_current_quest_path())

@@ -1,22 +1,45 @@
 extends Control
 
+# Подключаем общий debug-контроллер для ручной настройки координат модулей в Cargo.
 const ShipDebugPositioningController = preload("res://scripts/ship/ship_debug_positioning_controller.gd")
 
+# Фон раздела «Оборудование»: все модули и popup привязаны к его drawn rect.
 @onready var storage_background: TextureRect = $StorageBackground
+
+# Старый отдельный предмет монитора: сейчас скрыт, оставлен для совместимости сцены.
 @onready var diagnostic_monitor_item: TextureRect = $DiagnosticMonitorItem
+
+# Старый отдельный предмет пожаротушения: сейчас скрыт, оставлен для совместимости сцены.
 @onready var fire_suppression_item: TextureRect = $FireSuppressionItem
 
+# Панель описания выбранного модуля.
 @onready var tooltip_panel: Panel = $BottomInfoContainer/TooltipPanel
+
+# Заголовок popup-окна: название модуля.
 @onready var item_name_label: Label = $BottomInfoContainer/TooltipPanel/VBoxContainer/ItemNameLabel
+
+# Текст popup-окна: описание модуля.
 @onready var item_description_label: Label = $BottomInfoContainer/TooltipPanel/VBoxContainer/ItemDescriptionLabel
+
+# Кнопка действия: «Установить» или «Убрать».
 @onready var action_button: Button = $BottomInfoContainer/TooltipPanel/VBoxContainer/ActionButton
 
+# Яркость выбранного модуля.
 const SELECTED_BRIGHTNESS := 1.2
+
+# Яркость обычного модуля.
 const NORMAL_BRIGHTNESS := 1.0
+
+# Прозрачность установленного модуля в списке.
 const INSTALLED_ALPHA := 0.5
+
+# Прозрачность обычного модуля в списке.
 const NORMAL_ALPHA := 1.0
+
+# Количество модулей в каждой зоне Cargo Hardware.
 const MODULES_PER_ZONE := 10
 
+# Описание зон модулей: zone_id, шаблон item_id, шаблон иконки и подпись зоны.
 const ZONE_CONFIGS := [
 	["sleep", "module_sleep_%03d", "res://assets/items/hardware/pic.module.sleep%03d.png", "Спальная зона"],
 	["workzone", "module_workzone_%03d", "res://assets/items/hardware/pic.module.workzone%03d.png", "Рабочая зона"],
@@ -24,10 +47,19 @@ const ZONE_CONFIGS := [
 	["panel", "module_panel_%03d", "res://assets/items/frontpanel/pic.frontpanel%03d.png", "Передняя панель"],
 ]
 
+# Выбранный module_id: используется для popup, установки и debug-позиционирования.
 var selected_item_id: String = ""
+
+# Словарь module_id -> Button, чтобы обновлять все иконки по данным PlayerState.
 var item_nodes: Dictionary = {}
+
+# Данные модулей для UI: зона, название, описание и путь к иконке.
 var modules_data: Dictionary = {}
+
+# Визуальные данные Cargo: module_id -> texture_path, anchor_pos и size_ratio.
 var cargo_visual_data: Dictionary = {}
+
+# Ручные координаты модулей: перезаписывают автосетку и сохраняют твои настройки.
 var cargo_visual_overrides := {
 	"module_sleep_001": {"anchor_pos": Vector2(0.2140, 0.241),"size_ratio": Vector2(0.0916, 0.1644)},
 	"module_sleep_002": {"anchor_pos": Vector2(0.2780, 0.241),"size_ratio": Vector2(0.0916, 0.1644)},
@@ -73,14 +105,21 @@ var cargo_visual_overrides := {
 
 
 }
+
+# Корень сетки модулей: создается кодом, чтобы слой был под popup-окном.
 var modules_grid_root: Control
+
+# Экземпляр общего debug-контроллера для стрелок, -/+, [/] и печати координат.
 var debug_controller := ShipDebugPositioningController.new()
+
+# Прямоугольники popup-окон: первые 5 модулей ряда слева, 6-10 справа.
 var tooltip_rects := {
 	"left": Rect2(Vector2(0.020, 0.200), Vector2(0.160, 0.600)),
 	"right": Rect2(Vector2(0.820, 0.200), Vector2(0.160, 0.600)),
 }
 
 
+# _ready — «готово»: настраивает popup, строит данные модулей, создает иконки и сигналы.
 func _ready() -> void:
 	tooltip_panel.visible = false
 	tooltip_panel.clip_contents = true
@@ -114,6 +153,7 @@ func _ready() -> void:
 	refresh()
 
 
+# _build_modules_data — «построить данные модулей»: создает 4 зоны по 10 модулей.
 func _build_modules_data() -> void:
 	modules_data.clear()
 
@@ -138,6 +178,7 @@ func _build_modules_data() -> void:
 		modules_data[panel_id]["description"] = "Заменяет верхнюю переднюю панель кокпита на вариант %d." % i
 
 
+# _build_cargo_visual_data — «построить визуальные данные Cargo»: создает сетку и применяет overrides.
 func _build_cargo_visual_data() -> void:
 	cargo_visual_data.clear()
 
@@ -168,6 +209,7 @@ func _build_cargo_visual_data() -> void:
 			cargo_visual_data[item_id]["size_ratio"] = override_data["size_ratio"]
 
 
+# _create_modules_grid — «создать сетку модулей»: пересоздает корень и добавляет ряды зон.
 func _create_modules_grid() -> void:
 	item_nodes.clear()
 
@@ -190,6 +232,7 @@ func _create_modules_grid() -> void:
 	_update_item_layout()
 
 
+# _create_zone_row — «создать ряд зоны»: добавляет кнопки модулей одной зоны.
 func _create_zone_row(zone_id: String) -> void:
 	for item_id in _get_module_ids_for_zone(zone_id):
 		var data: Dictionary = modules_data[item_id]
@@ -221,6 +264,7 @@ func _create_zone_row(zone_id: String) -> void:
 		item_nodes[item_id] = button
 
 
+# _get_module_ids_for_zone — «получить ID модулей зоны»: возвращает 10 module_id по zone_id.
 func _get_module_ids_for_zone(zone_id: String) -> Array[String]:
 	var result: Array[String] = []
 	for zone_cfg in ZONE_CONFIGS:
@@ -231,6 +275,7 @@ func _get_module_ids_for_zone(zone_id: String) -> Array[String]:
 	return result
 
 
+# refresh — «обновить»: показывает найденные модули, selected/installed-состояние и popup.
 func refresh() -> void:
 	for item_key in item_nodes.keys():
 		var item_id := String(item_key)
@@ -256,12 +301,14 @@ func refresh() -> void:
 	_show_selected_item_info()
 
 
+# _get_item_modulate — «получить цвет предмета»: яркость selected и alpha installed.
 func _get_item_modulate(is_selected: bool, installed: bool) -> Color:
 	var brightness := SELECTED_BRIGHTNESS if is_selected else NORMAL_BRIGHTNESS
 	var alpha := INSTALLED_ALPHA if installed else NORMAL_ALPHA
 	return Color(brightness, brightness, brightness, alpha)
 
 
+# _on_item_pressed — «нажат предмет»: выбирает найденный модуль и обновляет popup.
 func _on_item_pressed(item_id: String) -> void:
 	if not PlayerState.has_found_module(item_id):
 		return
@@ -271,6 +318,7 @@ func _on_item_pressed(item_id: String) -> void:
 	refresh()
 
 
+# _show_selected_item_info — «показать информацию выбранного»: заполняет текст и кнопку popup.
 func _show_selected_item_info() -> void:
 	if selected_item_id.is_empty():
 		tooltip_panel.visible = false
@@ -299,6 +347,7 @@ func _show_selected_item_info() -> void:
 	call_deferred("_update_tooltip_layout")
 
 
+# _on_action_button_pressed — «нажата кнопка действия»: устанавливает или снимает модуль зоны.
 func _on_action_button_pressed() -> void:
 	if selected_item_id.is_empty():
 		return
@@ -318,10 +367,12 @@ func _on_action_button_pressed() -> void:
 	refresh()
 
 
+# _on_player_modules_changed — «изменились модули игрока»: обновляет список и popup.
 func _on_player_modules_changed() -> void:
 	refresh()
 
 
+# _unhandled_input — «необработанный ввод»: передает debug-клавиши модулей в общий контроллер.
 func _unhandled_input(event: InputEvent) -> void:
 	if not visible:
 		return
@@ -339,6 +390,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
+# _update_item_layout — «обновить раскладку предметов»: ставит иконки по anchor_pos и size_ratio.
 func _update_item_layout() -> void:
 	if modules_grid_root == null or not is_instance_valid(modules_grid_root):
 		return
@@ -371,6 +423,7 @@ func _update_item_layout() -> void:
 	_update_tooltip_layout()
 
 
+# _update_tooltip_layout — «обновить раскладку popup»: выбирает левый/правый rect и ставит окно.
 func _update_tooltip_layout() -> void:
 	var background_rect := _get_drawn_background_rect(storage_background)
 	if background_rect.size.x <= 0.0 or background_rect.size.y <= 0.0:
@@ -403,6 +456,7 @@ func _update_tooltip_layout() -> void:
 		vbox.offset_bottom = -14.0
 
 
+# _get_tooltip_side_for_selected_module — «получить сторону popup»: 1-5 слева, 6-10 справа.
 func _get_tooltip_side_for_selected_module() -> String:
 	if selected_item_id.is_empty():
 		return "left"
@@ -415,6 +469,7 @@ func _get_tooltip_side_for_selected_module() -> String:
 	return "left" if index <= 5 else "right"
 
 
+# _get_drawn_background_rect — «получить нарисованный прямоугольник фона»: учитывает cover-растяжение.
 func _get_drawn_background_rect(background: TextureRect) -> Rect2:
 	if background == null or not is_instance_valid(background):
 		return Rect2()
@@ -433,6 +488,7 @@ func _get_drawn_background_rect(background: TextureRect) -> Rect2:
 	return Rect2(drawn_position, drawn_size)
 
 
+# _calculate_preserved_item_size — «рассчитать сохраненный размер»: вписывает иконку без искажения.
 func _calculate_preserved_item_size(texture: Texture2D, max_size: Vector2) -> Vector2:
 	if texture == null:
 		return max_size
@@ -445,6 +501,7 @@ func _calculate_preserved_item_size(texture: Texture2D, max_size: Vector2) -> Ve
 	return texture_size * scale_value
 
 
+# _notification — «уведомление»: при resize пересчитывает модули и popup-окно.
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_RESIZED and is_node_ready():
 		_update_item_layout()

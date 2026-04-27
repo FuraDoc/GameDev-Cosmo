@@ -1,8 +1,9 @@
 class_name ShipModuleLayerController
 extends RefCounted
 
+# Данные визуалов модулей в кокпите: texture_path, anchor_pos и scale для каждого module_id.
 var module_visual_data := {
-	# Sleep zone
+	# Sleep zone: модули спальной зоны, которые отображаются на правой части кокпита.
 	"module_sleep_001": {"texture_path": "res://assets/items/hardware/module.sleep001.png", "anchor_pos": Vector2(0.863, 0.608), "scale": 1.0},
 	"module_sleep_002": {"texture_path": "res://assets/items/hardware/module.sleep002.png", "anchor_pos": Vector2(0.866, 0.568), "scale": 1.0},
 	"module_sleep_003": {"texture_path": "res://assets/items/hardware/module.sleep003.png", "anchor_pos": Vector2(0.851, 0.584), "scale": 1.0},
@@ -12,7 +13,7 @@ var module_visual_data := {
 	"module_sleep_007": {"texture_path": "res://assets/items/hardware/module.sleep007.png", "anchor_pos": Vector2(0.851, 0.50),  "scale": 1.0},
 	"module_sleep_008": {"texture_path": "res://assets/items/hardware/module.sleep008.png", "anchor_pos": Vector2(0.87,  0.568), "scale": 1.0},
 
-	# Workzone
+	# Workzone: модули рабочей зоны, обычно размещаются слева от центра кокпита.
 	"module_workzone_001": {"texture_path": "res://assets/items/hardware/module.workzone001.png", "anchor_pos": Vector2(0.083, 0.653), "scale": 1.534},
 	"module_workzone_002": {"texture_path": "res://assets/items/hardware/module.workzone002.png", "anchor_pos": Vector2(0.184, 0.604), "scale": 1.0},
 	"module_workzone_003": {"texture_path": "res://assets/items/hardware/module.workzone003.png", "anchor_pos": Vector2(0.196, 0.579), "scale": 1.0},
@@ -22,7 +23,7 @@ var module_visual_data := {
 	"module_workzone_007": {"texture_path": "res://assets/items/hardware/module.workzone007.png", "anchor_pos": Vector2(0.182, 0.497), "scale": 1.0},
 	"module_workzone_008": {"texture_path": "res://assets/items/hardware/module.workzone008.png", "anchor_pos": Vector2(0.166, 0.501), "scale": 1.0},
 
-	# Front
+	# Front: передние модули, которые привязаны к центральной части панели корабля.
 	"module_front_001": {"texture_path": "res://assets/items/hardware/module.front001.png", "anchor_pos": Vector2(0.568, 0.563), "scale": 1.0},
 	"module_front_002": {"texture_path": "res://assets/items/hardware/module.front002.png", "anchor_pos": Vector2(0.574, 0.601), "scale": 0.5568},
 	"module_front_003": {"texture_path": "res://assets/items/hardware/module.front003.png", "anchor_pos": Vector2(0.45,  0.59),  "scale": 0.677},
@@ -34,10 +35,11 @@ var module_visual_data := {
 }
 
 
+# refresh_items — «обновить предметы»: пересоздает TextureRect для активных модулей корабля.
 func refresh_items(hardware_layer: Control, clear_layer_callable: Callable) -> void:
 	clear_layer_callable.call(hardware_layer)
 
-	# Собираем активные модули из всех зон
+	# Собираем активные модули из зон, которые реально рисуются на слое кокпита.
 	var active_ids: Array[String] = []
 	for zone_id in ["sleep", "workzone", "front"]:
 		var module_id: String = PlayerState.get_active_module_for_zone(zone_id)
@@ -65,6 +67,7 @@ func refresh_items(hardware_layer: Control, clear_layer_callable: Callable) -> v
 		hardware_layer.add_child(rect)
 
 
+# update_layer — «обновить слой»: подгоняет позиции и размеры модулей под фон кокпита.
 func update_layer(hardware_layer: Control, cockpit_layer: Control, cockpit_texture: Texture2D) -> void:
 	if cockpit_texture == null:
 		return

@@ -1,6 +1,7 @@
 class_name ShipPetLayerController
 extends RefCounted
 
+# Данные визуалов питомцев в кокпите: у каждого pet_id есть набор возможных зон появления.
 var pet_visual_data := {
 	"alien_jelly": {
 		"zones": [
@@ -36,6 +37,7 @@ var pet_visual_data := {
 	}
 }
 
+# Активный индекс зоны для каждого питомца: debug-переключение выбирает вариант позиции/текстуры.
 var active_pet_zone_indices := {
 	"alien_jelly": 0,
 	"marta_cat":   0,
@@ -43,6 +45,7 @@ var active_pet_zone_indices := {
 }
 
 
+# refresh_items — «обновить предметы»: пересоздает TextureRect активного питомца на слое.
 func refresh_items(pet_layer: Control, clear_layer_callable: Callable) -> void:
 	clear_layer_callable.call(pet_layer)
 
@@ -64,6 +67,7 @@ func refresh_items(pet_layer: Control, clear_layer_callable: Callable) -> void:
 	pet_layer.add_child(rect)
 
 
+# update_layer — «обновить слой»: выбирает зону питомца и масштабирует его под фон кокпита.
 func update_layer(pet_layer: Control, cockpit_layer: Control, cockpit_texture: Texture2D) -> void:
 	if cockpit_texture == null:
 		return
@@ -111,6 +115,7 @@ func update_layer(pet_layer: Control, cockpit_layer: Control, cockpit_texture: T
 		)
 
 
+# cycle_active_zone — «переключить активную зону»: листает варианты позиции для debug-настройки.
 func cycle_active_zone(pet_id: String) -> void:
 	if not active_pet_zone_indices.has(pet_id):
 		active_pet_zone_indices[pet_id] = 0
