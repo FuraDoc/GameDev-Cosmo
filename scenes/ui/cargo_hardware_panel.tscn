@@ -41,7 +41,7 @@ offset_left = -485.0
 offset_bottom = 344.0
 grow_horizontal = 0
 
-[node name="BottomInfoContainer" type="CenterContainer" parent="." unique_id=1771365143]
+[node name="BottomInfoContainer" type="Control" parent="." unique_id=1771365143]
 layout_mode = 1
 anchors_preset = 10
 anchor_left = 0.5

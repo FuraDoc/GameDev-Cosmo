@@ -386,7 +386,7 @@ func debug_give_all_interior_items() -> void:
 
 func debug_give_all_modules() -> void:
 	for prefix in ["module_sleep", "module_workzone", "module_front", "module_panel"]:
-		for i in range(1, 9):
+		for i in range(1, 11):
 			add_found_module("%s_%03d" % [prefix, i])
 
 

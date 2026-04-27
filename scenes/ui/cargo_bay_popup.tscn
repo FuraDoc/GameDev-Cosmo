@@ -21,7 +21,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="CargoFrame" type="TextureRect" parent="."]
+[node name="CargoFrame" type="TextureRect" parent="." unique_id=812191099]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -33,7 +33,7 @@ texture = ExtResource("2_frame")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="ButtonLayer" type="Control" parent="."]
+[node name="ButtonLayer" type="Control" parent="." unique_id=1867007321]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

@@ -25,53 +25,62 @@ var selected_item_id := "interior_plant_001"
 var debug_controller := ShipDebugPositioningController.new()
 var item_nodes: Dictionary = {}
 var item_data: Dictionary = {}
+var info_popup_rect := Rect2(Vector2(0.360, 0.095), Vector2(0.280, 0.19))
 var cargo_visual_data := {
-	"interior_plant_001": {"texture_path": "res://assets/items/interior/plant001.png", "anchor_pos": Vector2(0.12, 0.18), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_002": {"texture_path": "res://assets/items/interior/plant002.png", "anchor_pos": Vector2(0.225, 0.18), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_003": {"texture_path": "res://assets/items/interior/plant003.png", "anchor_pos": Vector2(0.33, 0.18), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_004": {"texture_path": "res://assets/items/interior/plant004.png", "anchor_pos": Vector2(0.435, 0.18), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_005": {"texture_path": "res://assets/items/interior/plant005.png", "anchor_pos": Vector2(0.54, 0.18), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_006": {"texture_path": "res://assets/items/interior/plant006.png", "anchor_pos": Vector2(0.645, 0.18), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_007": {"texture_path": "res://assets/items/interior/plant007.png", "anchor_pos": Vector2(0.69, 0.22), "size_ratio": Vector2(0.153, 0.25)},
-	"interior_plant_008": {"texture_path": "res://assets/items/interior/plant008.png", "anchor_pos": Vector2(0.855, 0.18), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_009": {"texture_path": "res://assets/items/interior/plant009.png", "anchor_pos": Vector2(0.12, 0.35), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_010": {"texture_path": "res://assets/items/interior/plant010.png", "anchor_pos": Vector2(0.225, 0.35), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_011": {"texture_path": "res://assets/items/interior/plant011.png", "anchor_pos": Vector2(0.33, 0.35), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_012": {"texture_path": "res://assets/items/interior/plant012.png", "anchor_pos": Vector2(0.435, 0.35), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_013": {"texture_path": "res://assets/items/interior/plant013.png", "anchor_pos": Vector2(0.54, 0.35), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_014": {"texture_path": "res://assets/items/interior/plant014.png", "anchor_pos": Vector2(0.645, 0.35), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_015": {"texture_path": "res://assets/items/interior/plant015.png", "anchor_pos": Vector2(0.75, 0.35), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_016": {"texture_path": "res://assets/items/interior/plant016.png", "anchor_pos": Vector2(0.855, 0.35), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_017": {"texture_path": "res://assets/items/interior/plant017.png", "anchor_pos": Vector2(0.12, 0.52), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_018": {"texture_path": "res://assets/items/interior/plant018.png", "anchor_pos": Vector2(0.225, 0.52), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_019": {"texture_path": "res://assets/items/interior/plant019.png", "anchor_pos": Vector2(0.33, 0.52), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_020": {"texture_path": "res://assets/items/interior/plant020.png", "anchor_pos": Vector2(0.435, 0.52), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_021": {"texture_path": "res://assets/items/interior/plant021.png", "anchor_pos": Vector2(0.54, 0.52), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_022": {"texture_path": "res://assets/items/interior/plant022.png", "anchor_pos": Vector2(0.645, 0.52), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_023": {"texture_path": "res://assets/items/interior/plant023.png", "anchor_pos": Vector2(0.75, 0.52), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_024": {"texture_path": "res://assets/items/interior/plant024.png", "anchor_pos": Vector2(0.715, 0.538), "size_ratio": Vector2(0.60, 0.1)},
-	"interior_plant_025": {"texture_path": "res://assets/items/interior/plant025.png", "anchor_pos": Vector2(0.12, 0.69), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_026": {"texture_path": "res://assets/items/interior/plant026.png", "anchor_pos": Vector2(0.225, 0.69), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_027": {"texture_path": "res://assets/items/interior/plant027.png", "anchor_pos": Vector2(0.38, 0.7), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_028": {"texture_path": "res://assets/items/interior/plant028.png", "anchor_pos": Vector2(0.435, 0.69), "size_ratio": Vector2(0.114, 0.187)},
-	"interior_plant_029": {"texture_path": "res://assets/items/interior/plant029.png", "anchor_pos": Vector2(0.54, 0.69), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_030": {"texture_path": "res://assets/items/interior/plant030.png", "anchor_pos": Vector2(0.645, 0.69), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_031": {"texture_path": "res://assets/items/interior/plant031.png", "anchor_pos": Vector2(0.75, 0.69), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_032": {"texture_path": "res://assets/items/interior/plant032.png", "anchor_pos": Vector2(0.855, 0.69), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_033": {"texture_path": "res://assets/items/interior/plant033.png", "anchor_pos": Vector2(0.12, 0.86), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_034": {"texture_path": "res://assets/items/interior/plant034.png", "anchor_pos": Vector2(0.225, 0.86), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_035": {"texture_path": "res://assets/items/interior/plant035.png", "anchor_pos": Vector2(0.33, 0.86), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_036": {"texture_path": "res://assets/items/interior/plant036.png", "anchor_pos": Vector2(0.435, 0.86), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_037": {"texture_path": "res://assets/items/interior/plant037.png", "anchor_pos": Vector2(0.8, 0.522), "size_ratio": Vector2(0.126, 0.206)},
-	"interior_plant_038": {"texture_path": "res://assets/items/interior/plant038.png", "anchor_pos": Vector2(0.645, 0.86), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_039": {"texture_path": "res://assets/items/interior/plant039.png", "anchor_pos": Vector2(0.75, 0.86), "size_ratio": Vector2(0.055, 0.09)},
-	"interior_plant_040": {"texture_path": "res://assets/items/interior/plant040.png", "anchor_pos": Vector2(0.855, 0.86), "size_ratio": Vector2(0.055, 0.09)}
+	"interior_plant_001": {"texture_path": "res://assets/items/interior/plant001.png", "anchor_pos": Vector2(0.16, 0.857), "size_ratio": Vector2(0.138982, 0.227425)},
+	"interior_plant_002": {"texture_path": "res://assets/items/interior/plant002.png", "anchor_pos": Vector2(0.266, 0.784), "size_ratio": Vector2(0.226387, 0.370452)},
+	"interior_plant_003": {"texture_path": "res://assets/items/interior/plant003.png", "anchor_pos": Vector2(0.321, 0.515), "size_ratio": Vector2(0.070239, 0.114937)},
+	"interior_plant_004": {"texture_path": "res://assets/items/interior/plant004.png", "anchor_pos": Vector2(0.353, 0.807), "size_ratio": Vector2(0.055, 0.09)},
+	"interior_plant_005": {"texture_path": "res://assets/items/interior/plant005.png", "anchor_pos": Vector2(0.58, 0.75), "size_ratio": Vector2(0.063669, 0.104186)},
+	"interior_plant_006": {"texture_path": "res://assets/items/interior/plant006.png", "anchor_pos": Vector2(0.705, 0.879), "size_ratio": Vector2(0.145931, 0.238797)},
+	"interior_plant_007": {"texture_path": "res://assets/items/interior/plant007.png", "anchor_pos": Vector2(0.689, 0.223), "size_ratio": Vector2(0.16065, 0.2625)},
+	"interior_plant_008": {"texture_path": "res://assets/items/interior/plant008.png", "anchor_pos": Vector2(0.51, 0.528), "size_ratio": Vector2(0.044272, 0.072445)},
+	"interior_plant_009": {"texture_path": "res://assets/items/interior/plant009.png", "anchor_pos": Vector2(0.685, 0.699), "size_ratio": Vector2(0.052381, 0.085714)},
+	"interior_plant_010": {"texture_path": "res://assets/items/interior/plant010.png", "anchor_pos": Vector2(0.315, 0.17), "size_ratio": Vector2(0.138982, 0.227425)},
+	"interior_plant_011": {"texture_path": "res://assets/items/interior/plant011.png", "anchor_pos": Vector2(0.447, 0.362), "size_ratio": Vector2(0.055, 0.09)},
+	"interior_plant_012": {"texture_path": "res://assets/items/interior/plant012.png", "anchor_pos": Vector2(0.862, 0.861), "size_ratio": Vector2(0.188293, 0.308115)},
+	"interior_plant_013": {"texture_path": "res://assets/items/interior/plant013.png", "anchor_pos": Vector2(0.543, 0.364), "size_ratio": Vector2(0.055, 0.09)},
+	"interior_plant_014": {"texture_path": "res://assets/items/interior/plant014.png", "anchor_pos": Vector2(0.644, 0.365), "size_ratio": Vector2(0.055, 0.09)},
+	"interior_plant_015": {"texture_path": "res://assets/items/interior/plant015.png", "anchor_pos": Vector2(0.625, 0.521), "size_ratio": Vector2(0.052331, 0.085632)},
+	"interior_plant_016": {"texture_path": "res://assets/items/interior/plant016.png", "anchor_pos": Vector2(0.359, 0.361), "size_ratio": Vector2(0.055, 0.09)},
+	"interior_plant_017": {"texture_path": "res://assets/items/interior/plant017.png", "anchor_pos": Vector2(0.563, 0.518), "size_ratio": Vector2(0.055, 0.09)},
+	"interior_plant_018": {"texture_path": "res://assets/items/interior/plant018.png", "anchor_pos": Vector2(0.469, 0.668), "size_ratio": Vector2(0.056558, 0.092549)},
+	"interior_plant_019": {"texture_path": "res://assets/items/interior/plant019.png", "anchor_pos": Vector2(0.389, 0.517), "size_ratio": Vector2(0.055, 0.09)},
+	"interior_plant_020": {"texture_path": "res://assets/items/interior/plant020.png", "anchor_pos": Vector2(0.449, 0.516), "size_ratio": Vector2(0.055, 0.09)},
+	"interior_plant_021": {"texture_path": "res://assets/items/interior/plant021.png", "anchor_pos": Vector2(0.733, 0.536), "size_ratio": Vector2(0.064824, 0.106076)},
+	"interior_plant_022": {"texture_path": "res://assets/items/interior/plant022.png", "anchor_pos": Vector2(0.783, 0.541), "size_ratio": Vector2(0.087373, 0.142975)},
+	"interior_plant_023": {"texture_path": "res://assets/items/interior/plant023.png", "anchor_pos": Vector2(0.693, 0.534), "size_ratio": Vector2(0.055, 0.09)},
+	"interior_plant_024": {"texture_path": "res://assets/items/interior/plant024.png", "anchor_pos": Vector2(0.554, 0.668), "size_ratio": Vector2(0.6615, 0.11025)},
+	"interior_plant_025": {"texture_path": "res://assets/items/interior/plant025.png", "anchor_pos": Vector2(0.51, 0.693), "size_ratio": Vector2(0.098772, 0.161627)},
+	"interior_plant_026": {"texture_path": "res://assets/items/interior/plant026.png", "anchor_pos": Vector2(0.605, 0.678), "size_ratio": Vector2(0.055, 0.09)},
+	"interior_plant_027": {"texture_path": "res://assets/items/interior/plant027.png", "anchor_pos": Vector2(0.379, 0.676), "size_ratio": Vector2(0.127444, 0.208545)},
+	"interior_plant_028": {"texture_path": "res://assets/items/interior/plant028.png", "anchor_pos": Vector2(0.633, 0.78), "size_ratio": Vector2(0.125685, 0.206167)},
+	"interior_plant_029": {"texture_path": "res://assets/items/interior/plant029.png", "anchor_pos": Vector2(0.235, 0.552), "size_ratio": Vector2(0.069011, 0.112927)},
+	"interior_plant_030": {"texture_path": "res://assets/items/interior/plant030.png", "anchor_pos": Vector2(0.1, 0.203), "size_ratio": Vector2(0.093676, 0.153288)},
+	"interior_plant_031": {"texture_path": "res://assets/items/interior/plant031.png", "anchor_pos": Vector2(0.19, 0.18), "size_ratio": Vector2(0.186249, 0.304772)},
+	"interior_plant_032": {"texture_path": "res://assets/items/interior/plant032.png", "anchor_pos": Vector2(0.765, 0.17), "size_ratio": Vector2(0.17738, 0.290259)},
+	"interior_plant_033": {"texture_path": "res://assets/items/interior/plant033.png", "anchor_pos": Vector2(0.142, 0.53), "size_ratio": Vector2(0.13232, 0.216523)},
+	"interior_plant_034": {"texture_path": "res://assets/items/interior/plant034.png", "anchor_pos": Vector2(0.859, 0.56), "size_ratio": Vector2(0.114341, 0.187103)},
+	"interior_plant_035": {"texture_path": "res://assets/items/interior/plant035.png", "anchor_pos": Vector2(0.607, 0.315), "size_ratio": Vector2(0.101667, 0.166364)},
+	"interior_plant_036": {"texture_path": "res://assets/items/interior/plant036.png", "anchor_pos": Vector2(0.871, 0.156), "size_ratio": Vector2(0.153228, 0.250736)},
+	"interior_plant_037": {"texture_path": "res://assets/items/interior/plant037.png", "anchor_pos": Vector2(0.77, 0.763), "size_ratio": Vector2(0.108844, 0.177951)},
+	"interior_plant_038": {"texture_path": "res://assets/items/interior/plant038.png", "anchor_pos": Vector2(0.285, 0.547), "size_ratio": Vector2(0.047848, 0.078297)},
+	"interior_plant_039": {"texture_path": "res://assets/items/interior/plant039.png", "anchor_pos": Vector2(0.432, 0.668), "size_ratio": Vector2(0.060637, 0.099225)},
+	"interior_plant_040": {"texture_path": "res://assets/items/interior/plant040.png", "anchor_pos": Vector2(0.396, 0.297), "size_ratio": Vector2(0.073705, 0.120609)}
 }
 var debug_enabled := true
 
 
 func _ready() -> void:
 	tooltip_panel.visible = false
+	tooltip_panel.clip_contents = true
+	item_name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	item_name_label.clip_text = true
+	item_description_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	item_description_label.clip_text = true
+	item_description_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	action_button.size_flags_horizontal = Control.SIZE_SHRINK_END
+	action_button.size_flags_vertical = Control.SIZE_SHRINK_END
 	debug_controller.selected_layer = "interior.cargo"
 	debug_controller.selected_item_id = selected_item_id
 	items_root.clip_contents = true
@@ -80,6 +89,7 @@ func _ready() -> void:
 	_build_item_data()
 	await get_tree().process_frame
 	_create_item_nodes()
+	_update_popup_layout()
 	action_button.pressed.connect(_on_action_button_pressed)
 
 	if PlayerState.has_signal("interior_changed"):
@@ -172,7 +182,9 @@ func _show_selected_item_info() -> void:
 
 	action_button.text = "Убрать" if installed else "Установить"
 	action_button.disabled = (not installed and free_zone == -1)
+	_update_popup_layout()
 	tooltip_panel.visible = true
+	call_deferred("_update_popup_layout")
 
 
 func _on_item_pressed(item_id: String) -> void:
@@ -268,8 +280,41 @@ func _update_item_layout() -> void:
 			background_rect.size.y * anchor_pos.y - item_size.y * 0.5
 		)
 
+	_update_popup_layout()
+
+
+func _update_popup_layout() -> void:
+	var background_rect := _get_drawn_background_rect(storage_background)
+	if background_rect.size.x <= 0.0 or background_rect.size.y <= 0.0:
+		return
+
+	var popup_position := background_rect.position + info_popup_rect.position * background_rect.size
+	var popup_size := info_popup_rect.size * background_rect.size
+
+	$TopInfoContainer.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	$TopInfoContainer.custom_minimum_size = Vector2.ZERO
+	$TopInfoContainer.position = popup_position
+	$TopInfoContainer.size = popup_size
+	tooltip_panel.custom_minimum_size = Vector2.ZERO
+	tooltip_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	tooltip_panel.offset_left = 0.0
+	tooltip_panel.offset_top = 0.0
+	tooltip_panel.offset_right = 0.0
+	tooltip_panel.offset_bottom = 0.0
+	var vbox := tooltip_panel.get_node_or_null("VBoxContainer") as VBoxContainer
+	if vbox != null:
+		vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		vbox.clip_contents = true
+		vbox.offset_left = 14.0
+		vbox.offset_top = 12.0
+		vbox.offset_right = -14.0
+		vbox.offset_bottom = -12.0
+
 
 func _get_drawn_background_rect(background: TextureRect) -> Rect2:
+	if background == null or not is_instance_valid(background):
+		return Rect2()
+
 	var viewport_size := background.size
 	if background.texture == null:
 		return Rect2(Vector2.ZERO, viewport_size)
@@ -299,6 +344,7 @@ func print_selected_debug_item() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_RESIZED:
 		_update_item_layout()
+		_update_popup_layout()
 
 
 func _item_id_from_index(index: int) -> String:

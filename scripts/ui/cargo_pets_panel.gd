@@ -18,6 +18,7 @@ var selected_pet_id: String = ""
 
 var pet_nodes: Dictionary = {}
 var debug_controller := ShipDebugPositioningController.new()
+var info_popup_rect := Rect2(Vector2(0.260, 0.095), Vector2(0.480, 0.300))
 var cargo_visual_data := {
 	"alien_jelly": {"anchor_pos": Vector2(0.225, 0.616), "size_ratio": Vector2(0.232, 0.483)},
 	"marta_cat": {"anchor_pos": Vector2(0.512, 0.666), "size_ratio": Vector2(0.276, 0.340)},
@@ -44,6 +45,17 @@ var pet_data := {
 
 func _ready() -> void:
 	tooltip_panel.visible = false
+	tooltip_panel.clip_contents = true
+	pet_name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	pet_name_label.clip_text = true
+	pet_description_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	pet_description_label.clip_text = true
+	pet_description_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	pet_history_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	pet_history_label.clip_text = true
+	pet_history_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	action_button.size_flags_horizontal = Control.SIZE_SHRINK_END
+	action_button.size_flags_vertical = Control.SIZE_SHRINK_END
 	$BottomInfoContainer.z_index = 100
 	debug_controller.selected_layer = "pets.cargo"
 	debug_controller.selected_item_id = "alien_jelly"
@@ -65,6 +77,7 @@ func _ready() -> void:
 
 	await get_tree().process_frame
 	_update_item_layout()
+	_update_popup_layout()
 	refresh()
 
 
@@ -121,7 +134,9 @@ func _show_selected_pet_info() -> void:
 	var active = PlayerState.is_pet_active(selected_pet_id)
 	action_button.text = "Вернуть" if active else "Призвать"
 
+	_update_popup_layout()
 	tooltip_panel.visible = true
+	call_deferred("_update_popup_layout")
 
 
 func _on_action_button_pressed() -> void:
@@ -182,8 +197,39 @@ func _update_item_layout() -> void:
 			background_rect.size.y * anchor_pos.y - item_size.y * 0.5
 		)
 
+	_update_popup_layout()
+
+
+func _update_popup_layout() -> void:
+	var background_rect := _get_drawn_background_rect(storage_background)
+	if background_rect.size.x <= 0.0 or background_rect.size.y <= 0.0:
+		return
+
+	var popup_position := background_rect.position + info_popup_rect.position * background_rect.size
+	var popup_size := info_popup_rect.size * background_rect.size
+
+	$BottomInfoContainer.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	$BottomInfoContainer.custom_minimum_size = Vector2.ZERO
+	$BottomInfoContainer.position = popup_position
+	$BottomInfoContainer.size = popup_size
+	tooltip_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	tooltip_panel.offset_left = 0.0
+	tooltip_panel.offset_top = 0.0
+	tooltip_panel.offset_right = 0.0
+	tooltip_panel.offset_bottom = 0.0
+	var vbox := tooltip_panel.get_node_or_null("VBoxContainer") as VBoxContainer
+	if vbox != null:
+		vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		vbox.clip_contents = true
+		vbox.offset_left = 18.0
+		vbox.offset_top = 16.0
+		vbox.offset_right = -18.0
+		vbox.offset_bottom = -16.0
 
 func _get_drawn_background_rect(background: TextureRect) -> Rect2:
+	if background == null or not is_instance_valid(background):
+		return Rect2()
+
 	var viewport_size := background.size
 	if background.texture == null:
 		return Rect2(Vector2.ZERO, viewport_size)
@@ -213,3 +259,4 @@ func _calculate_preserved_item_size(texture: Texture2D, max_size: Vector2) -> Ve
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_RESIZED and is_node_ready():
 		_update_item_layout()
+		_update_popup_layout()

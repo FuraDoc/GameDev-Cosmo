@@ -34,13 +34,14 @@ expand_mode = 1
 stretch_mode = 6
 
 [node name="SelectedHintLabel" type="Label" parent="."]
+visible = false
 layout_mode = 0
 offset_left = 680.0
 offset_top = 210.0
 offset_right = 1240.0
 offset_bottom = 254.0
 theme_override_font_sizes/font_size = 24
-text = "Выберите найденный предмет на стенде"
+text = ""
 horizontal_alignment = 1
 
 [node name="InfoPopup" type="PanelContainer" parent="."]

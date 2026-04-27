@@ -15,7 +15,7 @@ const SELECTED_BRIGHTNESS := 1.2
 const NORMAL_BRIGHTNESS := 1.0
 const INSTALLED_ALPHA := 0.5
 const NORMAL_ALPHA := 1.0
-const MODULES_PER_ZONE := 8
+const MODULES_PER_ZONE := 10
 
 const ZONE_CONFIGS := [
 	["sleep", "module_sleep_%03d", "res://assets/items/hardware/pic.module.sleep%03d.png", "Спальная зона"],
@@ -32,53 +32,65 @@ var cargo_visual_overrides := {
 	"module_sleep_001": {"anchor_pos": Vector2(0.2140, 0.241),"size_ratio": Vector2(0.0916, 0.1644)},
 	"module_sleep_002": {"anchor_pos": Vector2(0.2780, 0.241),"size_ratio": Vector2(0.0916, 0.1644)},
 	"module_sleep_003": {"anchor_pos": Vector2(0.3420, 0.242),"size_ratio": Vector2(0.0916, 0.1644)},
-	"module_sleep_004": {"anchor_pos": Vector2(0.4045, 0.242),"size_ratio": Vector2(0.0916, 0.1644)},
+	"module_sleep_004": {"anchor_pos": Vector2(0.4050, 0.242),"size_ratio": Vector2(0.0916, 0.1644)},
 	"module_sleep_005": {"anchor_pos": Vector2(0.4680, 0.242),"size_ratio": Vector2(0.0916, 0.1644)},
-	"module_sleep_006": {"anchor_pos": Vector2(0.5305, 0.242),"size_ratio": Vector2(0.0916, 0.1644)},
+	"module_sleep_006": {"anchor_pos": Vector2(0.5310, 0.242),"size_ratio": Vector2(0.0916, 0.1644)},
 	"module_sleep_007": {"anchor_pos": Vector2(0.5950, 0.241),"size_ratio": Vector2(0.0916, 0.1644)},
 	"module_sleep_008": {"anchor_pos": Vector2(0.6575, 0.241),"size_ratio": Vector2(0.0916, 0.1644)},
-	"module_sleep_009": {"anchor_pos": Vector2(0.6975, 0.241),"size_ratio": Vector2(0.0916, 0.1644)},
-	"module_sleep_010": {"anchor_pos": Vector2(0.7575, 0.241),"size_ratio": Vector2(0.0916, 0.1644)},
+	"module_sleep_009": {"anchor_pos": Vector2(0.7215, 0.241),"size_ratio": Vector2(0.0916, 0.1644)},
+	"module_sleep_010": {"anchor_pos": Vector2(0.7855, 0.241),"size_ratio": Vector2(0.0916, 0.1644)},
 	"module_workzone_001": {"anchor_pos": Vector2(0.2140, 0.4150),"size_ratio": Vector2(0.0908, 0.1629)},
 	"module_workzone_002": {"anchor_pos": Vector2(0.2780, 0.4150),"size_ratio": Vector2(0.0908, 0.1629)},
 	"module_workzone_003": {"anchor_pos": Vector2(0.3420, 0.4150),"size_ratio": Vector2(0.0908, 0.1629)},
-	"module_workzone_004": {"anchor_pos": Vector2(0.4045, 0.4150),"size_ratio": Vector2(0.0908, 0.1629)},
+	"module_workzone_004": {"anchor_pos": Vector2(0.4050, 0.4150),"size_ratio": Vector2(0.0908, 0.1629)},
 	"module_workzone_005": {"anchor_pos": Vector2(0.4680, 0.4150),"size_ratio": Vector2(0.0908, 0.1629)},
-	"module_workzone_006": {"anchor_pos": Vector2(0.5305, 0.4150),"size_ratio": Vector2(0.0908, 0.1629)},
+	"module_workzone_006": {"anchor_pos": Vector2(0.5310, 0.4150),"size_ratio": Vector2(0.0908, 0.1629)},
 	"module_workzone_007": {"anchor_pos": Vector2(0.5950, 0.4150),"size_ratio": Vector2(0.0908, 0.1629)},
 	"module_workzone_008": {"anchor_pos": Vector2(0.6575, 0.4150),"size_ratio": Vector2(0.0908, 0.1629)},
-	"module_workzone_009": {"anchor_pos": Vector2(0.6975, 0.4150),"size_ratio": Vector2(0.0908, 0.1629)},
-	"module_workzone_010": {"anchor_pos": Vector2(0.7575, 0.4150),"size_ratio": Vector2(0.0908, 0.1629)},
+	"module_workzone_009": {"anchor_pos": Vector2(0.7215, 0.4150),"size_ratio": Vector2(0.0908, 0.1629)},
+	"module_workzone_010": {"anchor_pos": Vector2(0.7855, 0.4150),"size_ratio": Vector2(0.0908, 0.1629)},
 	"module_front_001": {"anchor_pos": Vector2(0.2130, 0.5900),"size_ratio": Vector2(0.0912, 0.1636)},
 	"module_front_002": {"anchor_pos": Vector2(0.2780, 0.5900),"size_ratio": Vector2(0.0912, 0.1636)},
 	"module_front_003": {"anchor_pos": Vector2(0.3420, 0.5900),"size_ratio": Vector2(0.0912, 0.1636)},
-	"module_front_004": {"anchor_pos": Vector2(0.4045, 0.5900),"size_ratio": Vector2(0.0912, 0.1636)},
+	"module_front_004": {"anchor_pos": Vector2(0.4050, 0.5900),"size_ratio": Vector2(0.0912, 0.1636)},
 	"module_front_005": {"anchor_pos": Vector2(0.4680, 0.5900),"size_ratio": Vector2(0.0912, 0.1636)},
-	"module_front_006": {"anchor_pos": Vector2(0.5305, 0.5900),"size_ratio": Vector2(0.0912, 0.1636)},
+	"module_front_006": {"anchor_pos": Vector2(0.5310, 0.5900),"size_ratio": Vector2(0.0912, 0.1636)},
 	"module_front_007": {"anchor_pos": Vector2(0.5950, 0.5900),"size_ratio": Vector2(0.0912, 0.1636)},
 	"module_front_008": {"anchor_pos": Vector2(0.6575, 0.5900),"size_ratio": Vector2(0.0912, 0.1636)},
-	"module_front_009": {"anchor_pos": Vector2(0.6975, 0.5900),"size_ratio": Vector2(0.0912, 0.1636)},
-	"module_front_010": {"anchor_pos": Vector2(0.7575, 0.5900),"size_ratio": Vector2(0.0912, 0.1636)},
+	"module_front_009": {"anchor_pos": Vector2(0.7215, 0.5900),"size_ratio": Vector2(0.0912, 0.1636)},
+	"module_front_010": {"anchor_pos": Vector2(0.7855, 0.5900),"size_ratio": Vector2(0.0912, 0.1636)},
 	"module_panel_001": {"anchor_pos": Vector2(0.2140, 0.7630),"size_ratio": Vector2(0.0909, 0.1629)},
 	"module_panel_002": {"anchor_pos": Vector2(0.2780, 0.7630),"size_ratio": Vector2(0.0909, 0.1629)},
 	"module_panel_003": {"anchor_pos": Vector2(0.3420, 0.7630),"size_ratio": Vector2(0.0909, 0.1629)},
-	"module_panel_004": {"anchor_pos": Vector2(0.4045, 0.7630),"size_ratio": Vector2(0.0909, 0.1629)},
+	"module_panel_004": {"anchor_pos": Vector2(0.4050, 0.7630),"size_ratio": Vector2(0.0909, 0.1629)},
 	"module_panel_005": {"anchor_pos": Vector2(0.4680, 0.7630),"size_ratio": Vector2(0.0909, 0.1629)},
-	"module_panel_006": {"anchor_pos": Vector2(0.5305, 0.7630),"size_ratio": Vector2(0.0909, 0.1629)},
+	"module_panel_006": {"anchor_pos": Vector2(0.5310, 0.7630),"size_ratio": Vector2(0.0909, 0.1629)},
 	"module_panel_007": {"anchor_pos": Vector2(0.5950, 0.7630),"size_ratio": Vector2(0.0909, 0.1629)},
 	"module_panel_008": {"anchor_pos": Vector2(0.6575, 0.7630),"size_ratio": Vector2(0.0909, 0.1629)},
-	"module_panel_009": {"anchor_pos": Vector2(0.6975, 0.7630),"size_ratio": Vector2(0.0909, 0.1629)},
-	"module_panel_010": {"anchor_pos": Vector2(0.7575, 0.7630),"size_ratio": Vector2(0.0909, 0.1629)},
+	"module_panel_009": {"anchor_pos": Vector2(0.7215, 0.7630),"size_ratio": Vector2(0.0909, 0.1629)},
+	"module_panel_010": {"anchor_pos": Vector2(0.7855, 0.7630),"size_ratio": Vector2(0.0909, 0.1629)},
 
 
 
 }
 var modules_grid_root: Control
 var debug_controller := ShipDebugPositioningController.new()
+var tooltip_rects := {
+	"left": Rect2(Vector2(0.020, 0.200), Vector2(0.160, 0.600)),
+	"right": Rect2(Vector2(0.820, 0.200), Vector2(0.160, 0.600)),
+}
 
 
 func _ready() -> void:
 	tooltip_panel.visible = false
+	tooltip_panel.clip_contents = true
+	item_name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	item_name_label.clip_text = true
+	item_description_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	item_description_label.clip_text = true
+	item_description_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	action_button.size_flags_horizontal = Control.SIZE_SHRINK_END
+	action_button.size_flags_vertical = Control.SIZE_SHRINK_END
 	$BottomInfoContainer.z_index = 100
 	debug_controller.selected_layer = "hardware.cargo"
 	debug_controller.selected_item_id = "module_sleep_001"
@@ -270,7 +282,9 @@ func _show_selected_item_info() -> void:
 		item_description_label.text = "Описание отсутствует."
 		action_button.text = "Установить"
 		action_button.disabled = true
+		_update_tooltip_layout()
 		tooltip_panel.visible = true
+		call_deferred("_update_tooltip_layout")
 		return
 
 	var zone_id: String = data["zone"]
@@ -280,7 +294,9 @@ func _show_selected_item_info() -> void:
 	item_description_label.text = data["description"]
 	action_button.text = "Убрать" if installed else "Установить"
 	action_button.disabled = false
+	_update_tooltip_layout()
 	tooltip_panel.visible = true
+	call_deferred("_update_tooltip_layout")
 
 
 func _on_action_button_pressed() -> void:
@@ -352,8 +368,57 @@ func _update_item_layout() -> void:
 			background_rect.size.y * anchor_pos.y - item_size.y * 0.5
 		)
 
+	_update_tooltip_layout()
+
+
+func _update_tooltip_layout() -> void:
+	var background_rect := _get_drawn_background_rect(storage_background)
+	if background_rect.size.x <= 0.0 or background_rect.size.y <= 0.0:
+		return
+
+	var side := _get_tooltip_side_for_selected_module()
+	var normalized_rect: Rect2 = tooltip_rects[side]
+	var popup_position := background_rect.position + normalized_rect.position * background_rect.size
+	var popup_size := normalized_rect.size * background_rect.size
+	var container := $BottomInfoContainer as Control
+
+	container.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	container.custom_minimum_size = Vector2.ZERO
+	container.position = popup_position
+	container.size = popup_size
+	tooltip_panel.custom_minimum_size = Vector2.ZERO
+	tooltip_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	tooltip_panel.offset_left = 0.0
+	tooltip_panel.offset_top = 0.0
+	tooltip_panel.offset_right = 0.0
+	tooltip_panel.offset_bottom = 0.0
+
+	var vbox := tooltip_panel.get_node_or_null("VBoxContainer") as VBoxContainer
+	if vbox != null:
+		vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		vbox.clip_contents = true
+		vbox.offset_left = 14.0
+		vbox.offset_top = 14.0
+		vbox.offset_right = -14.0
+		vbox.offset_bottom = -14.0
+
+
+func _get_tooltip_side_for_selected_module() -> String:
+	if selected_item_id.is_empty():
+		return "left"
+
+	var parts := selected_item_id.split("_")
+	if parts.is_empty():
+		return "left"
+
+	var index := int(parts[parts.size() - 1])
+	return "left" if index <= 5 else "right"
+
 
 func _get_drawn_background_rect(background: TextureRect) -> Rect2:
+	if background == null or not is_instance_valid(background):
+		return Rect2()
+
 	var viewport_size := background.size
 	if background.texture == null:
 		return Rect2(Vector2.ZERO, viewport_size)
@@ -383,3 +448,4 @@ func _calculate_preserved_item_size(texture: Texture2D, max_size: Vector2) -> Ve
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_RESIZED and is_node_ready():
 		_update_item_layout()
+		_update_tooltip_layout()
