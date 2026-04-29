@@ -83,10 +83,13 @@ func _ready() -> void:
 	info_popup.clip_contents = true
 	info_title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	info_title_label.clip_text = true
+	info_title_label.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	info_description_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	info_description_label.clip_text = true
 	info_description_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	use_button.custom_minimum_size = Vector2(210.0, 42.0)
 	use_button.size_flags_horizontal = Control.SIZE_SHRINK_END
+	use_button.size_flags_vertical = Control.SIZE_SHRINK_END
 	selected_hint_label.visible = false
 	_debug_controller.selected_layer = "equipment.cargo"
 	_debug_controller.selected_item_id = "standard_suit"
@@ -186,7 +189,7 @@ func _update_use_button(item_data: ItemData) -> void:
 	use_button.visible = true
 	var is_active := PlayerState.has_active_suit(item_data.item_id)
 	use_button.disabled = is_active
-	use_button.text = "РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ" if is_active else "РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ"
+	use_button.text = "Используется" if is_active else "Использовать"
 
 
 # _hide_popup — "скрыть окно": сбрасывает выбор и прячет окно описания.

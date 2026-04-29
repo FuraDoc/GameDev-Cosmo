@@ -18,6 +18,9 @@ var background_path = "res://assets/backgrounds/space/ship-frontwiew.jpg"
 # save_slots_popup_scene — "сцена окна слотов": переиспользуется для новой игры и продолжения.
 var save_slots_popup_scene = preload("res://scenes/ui/save_slots_popup.tscn")
 
+# settings_popup_scene — "сцена настроек": простое окно настроек главного меню.
+var settings_popup_scene = preload("res://scenes/ui/settings_popup.tscn")
+
 
 # _ready — "готово": запускает фон, fade-in, подключает кнопки и обновляет Continue.
 func _ready():
@@ -84,9 +87,14 @@ func _on_continue_slot_confirmed(slot_id: int) -> void:
 	get_tree().change_scene_to_file("res://scenes/ship/ship_scene.tscn")
 
 
-# _on_settings_pressed — "при нажатии настроек": временная заглушка будущего окна настроек.
+# _on_settings_pressed — "при нажатии настроек": открывает окно настроек поверх меню.
 func _on_settings_pressed():
-	print("Открыть настройки")
+	if has_node("SettingsPopup"):
+		return
+
+	var popup = settings_popup_scene.instantiate()
+	popup.name = "SettingsPopup"
+	add_child(popup)
 
 
 # _on_exit_pressed — "при нажатии выхода": завершает приложение.

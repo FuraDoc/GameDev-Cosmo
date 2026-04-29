@@ -9,6 +9,12 @@ signal suit_changed(active_suit_id: String)
 # Сигнал изменения интерьера: обновляет Cargo Interior и слой интерьера в корабле.
 signal interior_changed
 
+# Сигнал выбора интерьера для debug в кокпите: ShipViewController подхватывает item_id.
+signal debug_interior_selection_changed(item_id: String)
+
+# Сигнал запроса установки интерьера: ShipViewController берет зону из interior_visual_data.
+signal debug_interior_install_requested(item_id: String)
+
 # Сигнал изменения оборудования: обновляет Cargo Hardware и связанные панели.
 signal hardware_changed
 
@@ -37,6 +43,9 @@ var active_suit_id: String = ""
 
 # Найденные предметы интерьера: список item_id, доступных в Cargo Interior.
 var found_interior_items: Array[String] = []
+
+# Активный предмет интерьера для debug-позиционирования в кокпите.
+var debug_selected_interior_item_id: String = ""
 
 # Установленный интерьер по зонам: ключ зоны -> item_id, пустая строка означает свободно.
 var installed_interior_by_zone := {
@@ -293,6 +302,28 @@ func uninstall_interior_zone(zone_id: int) -> void:
 # set_interior_item_zone — «задать зону предмета интерьера»: короткий alias для установки.
 func set_interior_item_zone(item_id: String, zone_id: int) -> void:
 	install_interior_item(item_id, zone_id)
+
+
+# set_debug_selected_interior_item — «задать debug-интерьер»: выбирает предмет для кокпита.
+func set_debug_selected_interior_item(item_id: String) -> void:
+	if item_id == debug_selected_interior_item_id:
+		return
+
+	debug_selected_interior_item_id = item_id
+	debug_interior_selection_changed.emit(debug_selected_interior_item_id)
+
+
+# get_debug_selected_interior_item — «получить debug-интерьер»: возвращает активный item_id.
+func get_debug_selected_interior_item() -> String:
+	return debug_selected_interior_item_id
+
+
+# request_debug_interior_install — «запросить установку debug-интерьера»: просит корабль поставить.
+func request_debug_interior_install(item_id: String) -> void:
+	if item_id.is_empty():
+		return
+
+	debug_interior_install_requested.emit(item_id)
 
 
 # has_found_hardware_item — «найден предмет оборудования»: проверка старого списка оборудования.

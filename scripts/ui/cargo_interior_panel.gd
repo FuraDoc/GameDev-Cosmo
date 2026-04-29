@@ -116,7 +116,6 @@ var cargo_visual_data := {
 # Включатель debug-позиционирования предметов интерьера в Cargo.
 var debug_enabled := true
 
-
 # _ready — «готово»: настраивает popup, debug-контроллер, создает предметы и подключает сигналы.
 func _ready() -> void:
 	tooltip_panel.visible = false
@@ -130,6 +129,7 @@ func _ready() -> void:
 	action_button.size_flags_vertical = Control.SIZE_SHRINK_END
 	debug_controller.selected_layer = "interior.cargo"
 	debug_controller.selected_item_id = selected_item_id
+	PlayerState.set_debug_selected_interior_item(selected_item_id)
 	items_root.clip_contents = true
 	items_root.z_index = 0
 	$TopInfoContainer.z_index = 100
@@ -179,6 +179,7 @@ func _create_item_nodes() -> void:
 		button.mouse_filter = Control.MOUSE_FILTER_STOP
 		button.clip_contents = false
 		button.pressed.connect(_on_item_pressed.bind(item_id))
+		button.gui_input.connect(_on_item_gui_input.bind(item_id))
 
 		var rect := TextureRect.new()
 		rect.name = "Icon"
@@ -223,8 +224,6 @@ func _show_selected_item_info() -> void:
 	var data: Dictionary = item_data.get(selected_item_id, {})
 	var zone_id: int = PlayerState.get_interior_item_zone(selected_item_id)
 	var installed: bool = zone_id != -1
-	var free_zone: int = PlayerState.get_first_free_interior_zone()
-
 	item_name_label.text = String(data.get("title", "Неизвестный предмет"))
 	item_description_label.text = String(data.get("description", "Описание отсутствует."))
 	if installed:
@@ -233,7 +232,7 @@ func _show_selected_item_info() -> void:
 		item_description_label.text += "\n\nНе установлен."
 
 	action_button.text = "Убрать" if installed else "Установить"
-	action_button.disabled = (not installed and free_zone == -1)
+	action_button.disabled = false
 	_update_popup_layout()
 	tooltip_panel.visible = true
 	call_deferred("_update_popup_layout")
@@ -241,8 +240,27 @@ func _show_selected_item_info() -> void:
 
 # _on_item_pressed — «нажат предмет»: выбирает item_id, синхронизирует debug и обновляет UI.
 func _on_item_pressed(item_id: String) -> void:
+	_select_item(item_id)
+
+
+# _on_item_gui_input — «ввод по предмету»: правый клик тоже выбирает предмет без установки.
+func _on_item_gui_input(event: InputEvent, item_id: String) -> void:
+	if not (event is InputEventMouseButton):
+		return
+
+	var mouse_event := event as InputEventMouseButton
+	if mouse_event.button_index != MOUSE_BUTTON_RIGHT or not mouse_event.pressed:
+		return
+
+	_select_item(item_id)
+	accept_event()
+
+
+# _select_item — «выбрать предмет»: подсвечивает item_id и делает его debug-целью кокпита.
+func _select_item(item_id: String) -> void:
 	selected_item_id = item_id
 	debug_controller.selected_item_id = item_id
+	PlayerState.set_debug_selected_interior_item(item_id)
 	refresh()
 
 
@@ -251,12 +269,12 @@ func _on_action_button_pressed() -> void:
 	if selected_item_id.is_empty():
 		return
 
+	PlayerState.set_debug_selected_interior_item(selected_item_id)
+
 	if PlayerState.is_interior_item_installed(selected_item_id):
 		PlayerState.uninstall_interior_item(selected_item_id)
 	else:
-		var target_zone := PlayerState.get_first_free_interior_zone()
-		if target_zone != -1:
-			PlayerState.install_interior_item(selected_item_id, target_zone)
+		PlayerState.request_debug_interior_install(selected_item_id)
 
 	refresh()
 
@@ -290,6 +308,7 @@ func _handle_debug_cycle_input(event: InputEventKey) -> bool:
 	var handled := debug_controller._handle_cargo_cycle_input(event, cargo_visual_data)
 	if handled:
 		selected_item_id = debug_controller.selected_item_id
+		PlayerState.set_debug_selected_interior_item(selected_item_id)
 		refresh()
 	return handled
 
@@ -298,6 +317,7 @@ func _handle_debug_cycle_input(event: InputEventKey) -> bool:
 func _handle_debug_transform_input(event: InputEventKey) -> void:
 	debug_controller.handle_cargo_input(event, cargo_visual_data, Callable(self, "_update_item_layout"))
 	selected_item_id = debug_controller.selected_item_id
+	PlayerState.set_debug_selected_interior_item(selected_item_id)
 	refresh()
 
 
@@ -306,6 +326,7 @@ func _cycle_selected_item(direction: int) -> void:
 	var current_index := _index_from_item_id(selected_item_id)
 	var next_index := posmod(current_index + direction, ITEM_COUNT)
 	selected_item_id = _item_id_from_index(next_index)
+	PlayerState.set_debug_selected_interior_item(selected_item_id)
 	refresh()
 	print("Selected [interior.cargo]: ", selected_item_id)
 

@@ -5,7 +5,7 @@ extends RefCounted
 var enabled := true
 
 # Выбранный слой для ручной настройки: корабль, модуль, питомец, панель или Cargo Bay.
-var selected_layer := "module" # "interior.ship" / "module" / "pet" / "panel" / "*.cargo"
+var selected_layer := "interior.ship" # "interior.ship" / "module" / "pet" / "panel" / "*.cargo"
 
 # Выбранный item_id: именно этот визуальный объект двигается стрелками и масштабируется.
 var selected_item_id := "interior_plant_001"

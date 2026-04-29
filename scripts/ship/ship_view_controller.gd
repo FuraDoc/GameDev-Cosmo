@@ -73,7 +73,7 @@ const PARALLAX_SPACE   := 0.65  # космос — самый сильный с�
 const PARALLAX_COCKPIT := 0.30  # кокпит — средний
 const PARALLAX_PANEL   := 0.08  # панель — почти не двигается
 
-# Текущее смещение взгляда после сглаживания.
+# Текущее смещение взгляда: сразу равно целевому, без хвоста сглаживания.
 var look_offset        := Vector2.ZERO
 
 # Целевое смещение взгляда от позиции мыши.
@@ -82,15 +82,15 @@ var target_look_offset := Vector2.ZERO
 # Максимальное смещение взгляда в пикселях.
 var max_look_offset    := Vector2(140, 85)
 
-# Скорость сглаживания движения камеры и зума.
-var motion_smoothness  := 5.0
-
 # ─────────────────────────────────────────────
 # ЗУМ
 # ─────────────────────────────────────────────
 
-# Шаг зума за одно прокручивание колёсика
-const ZOOM_STEP := 0.12
+# Шаг зума за одно прокручивание колесика: меньшее значение дает более мягкий скролл.
+const ZOOM_STEP := 0.06
+
+# Скорость сглаживания зума: влияет только на приближение/отдаление, не на взгляд мышкой.
+const ZOOM_SMOOTHNESS := 9.0
 
 # Коэффициенты влияния зума на каждый слой
 const ZOOM_SCALE_SPACE   := 0.1   # небольшое увеличение космоса
@@ -105,7 +105,7 @@ const ZOOM_SHIFT_SPACE   := -5.0   # космос уходит вверх
 const ZOOM_SHIFT_COCKPIT := 40.0   # кокпит опускается
 const ZOOM_SHIFT_PANEL   := 200.0  # панель уезжает вниз
 
-# Текущий уровень зума после сглаживания.
+# Текущий уровень зума: плавно догоняет целевой уровень после скролла.
 var zoom_level        := 0.0
 
 # Целевой уровень зума от колеса мыши.
@@ -135,7 +135,7 @@ const PERISCOPE_SCALE_OVERDRAW := 1.02
 # Активен ли режим перископа.
 var periscope_active              := false
 
-# Текущий зум перископа после сглаживания.
+# Текущий зум перископа: плавно догоняет целевой уровень после скролла.
 var periscope_zoom                := 1.0
 
 # Целевой зум перископа.
@@ -168,9 +168,6 @@ var max_ship_offset       := Vector2(700, 420)
 # Чувствительность drag-поворота.
 var ship_turn_sensitivity := 0.2
 
-# Сглаживание смещения корабля.
-var ship_motion_smoothness := 2.0
-
 # Последняя позиция мыши для вычисления delta при ПКМ.
 var last_mouse_position   := Vector2.ZERO
 
@@ -186,60 +183,51 @@ const SCALE_OVERDRAW_PANEL   := 1.02  # запас для панели
 # Вертикальное смещение панели от нижнего края экрана
 const PANEL_BOTTOM_OFFSET := 110.0
 
-# Таймер вибрации двигателя: идет вперед каждый кадр.
-var engine_vibration_time        := 0.0
-
-# Базовая сила вибрации передней панели.
-var engine_vibration_strength    := 0.02
-
-# Дополнительная вибрация при повороте корабля.
-var engine_vibration_turn_bonus  := 0.02  # доп. вибрация при повороте
-
 # Количество предметов интерьера ship-вида.
 const INTERIOR_ITEM_COUNT := 40
 
 # Визуальные данные интерьера в кокпите: texture_path, зона, anchor_pos и size_ratio.
 var interior_visual_data := {
-	"interior_plant_001": {"texture_path": "res://assets/items/interior/plant001.png", "zone": 1, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_002": {"texture_path": "res://assets/items/interior/plant002.png", "zone": 2, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_003": {"texture_path": "res://assets/items/interior/plant003.png", "zone": 3, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_004": {"texture_path": "res://assets/items/interior/plant004.png", "zone": 4, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_005": {"texture_path": "res://assets/items/interior/plant005.png", "zone": 5, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_006": {"texture_path": "res://assets/items/interior/plant006.png", "zone": 6, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_007": {"texture_path": "res://assets/items/interior/plant007.png", "zone": 7, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_008": {"texture_path": "res://assets/items/interior/plant008.png", "zone": 8, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_009": {"texture_path": "res://assets/items/interior/plant009.png", "zone": 1, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_010": {"texture_path": "res://assets/items/interior/plant010.png", "zone": 2, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_011": {"texture_path": "res://assets/items/interior/plant011.png", "zone": 1, "anchor_pos": Vector2(0.31, 0.58), "size_ratio": Vector2(0.04, 0.07)},
-	"interior_plant_012": {"texture_path": "res://assets/items/interior/plant012.png", "zone": 4, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_013": {"texture_path": "res://assets/items/interior/plant013.png", "zone": 5, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_014": {"texture_path": "res://assets/items/interior/plant014.png", "zone": 6, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_015": {"texture_path": "res://assets/items/interior/plant015.png", "zone": 7, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.04, 0.07)},
-	"interior_plant_016": {"texture_path": "res://assets/items/interior/plant016.png", "zone": 8, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_017": {"texture_path": "res://assets/items/interior/plant017.png", "zone": 1, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_018": {"texture_path": "res://assets/items/interior/plant018.png", "zone": 2, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_019": {"texture_path": "res://assets/items/interior/plant019.png", "zone": 3, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_020": {"texture_path": "res://assets/items/interior/plant020.png", "zone": 4, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_021": {"texture_path": "res://assets/items/interior/plant021.png", "zone": 5, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_022": {"texture_path": "res://assets/items/interior/plant022.png", "zone": 6, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_023": {"texture_path": "res://assets/items/interior/plant023.png", "zone": 7, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_024": {"texture_path": "res://assets/items/interior/plant024.png", "zone": 8, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_025": {"texture_path": "res://assets/items/interior/plant025.png", "zone": 1, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_026": {"texture_path": "res://assets/items/interior/plant026.png", "zone": 2, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_027": {"texture_path": "res://assets/items/interior/plant027.png", "zone": 3, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_028": {"texture_path": "res://assets/items/interior/plant028.png", "zone": 4, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_029": {"texture_path": "res://assets/items/interior/plant029.png", "zone": 5, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_030": {"texture_path": "res://assets/items/interior/plant030.png", "zone": 6, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_031": {"texture_path": "res://assets/items/interior/plant031.png", "zone": 7, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_032": {"texture_path": "res://assets/items/interior/plant032.png", "zone": 8, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_033": {"texture_path": "res://assets/items/interior/plant033.png", "zone": 1, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_034": {"texture_path": "res://assets/items/interior/plant034.png", "zone": 2, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_035": {"texture_path": "res://assets/items/interior/plant035.png", "zone": 3, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_036": {"texture_path": "res://assets/items/interior/plant036.png", "zone": 4, "anchor_pos": Vector2(0.712, 0.354), "size_ratio": Vector2(0.047, 0.084)},
-	"interior_plant_037": {"texture_path": "res://assets/items/interior/plant037.png", "zone": 5, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_038": {"texture_path": "res://assets/items/interior/plant038.png", "zone": 6, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_039": {"texture_path": "res://assets/items/interior/plant039.png", "zone": 7, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)},
-	"interior_plant_040": {"texture_path": "res://assets/items/interior/plant040.png", "zone": 8, "anchor_pos": Vector2(0.5, 0.5), "size_ratio": Vector2(0.5, 0.5)}
+	"interior_plant_001": {"texture_path": "res://assets/items/interior/plant001.png", "zone": 1, "anchor_pos": Vector2(0.343, 0.563), "size_ratio": Vector2(0.060, 0.060)},
+	"interior_plant_002": {"texture_path": "res://assets/items/interior/plant002.png", "zone": 7, "anchor_pos": Vector2(0.860, 0.873), "size_ratio": Vector2(0.307, 0.307)},
+	"interior_plant_003": {"texture_path": "res://assets/items/interior/plant003.png", "zone": 2, "anchor_pos": Vector2(0.714, 0.579), "size_ratio": Vector2(0.010, 0.010)},
+	"interior_plant_004": {"texture_path": "res://assets/items/interior/plant004.png", "zone": 1, "anchor_pos": Vector2(0.343, 0.568), "size_ratio": Vector2(0.048, 0.048)},
+	"interior_plant_005": {"texture_path": "res://assets/items/interior/plant005.png", "zone": 2, "anchor_pos": Vector2(0.714, 0.579), "size_ratio": Vector2(0.097, 0.097)},
+	"interior_plant_006": {"texture_path": "res://assets/items/interior/plant006.png", "zone": 7, "anchor_pos": Vector2(0.850, 0.900), "size_ratio": Vector2(0.265, 0.265)},
+	"interior_plant_007": {"texture_path": "res://assets/items/interior/plant007.png", "zone": 6, "anchor_pos": Vector2(0.606, 0.335), "size_ratio": Vector2(0.154, 0.154)},
+	"interior_plant_008": {"texture_path": "res://assets/items/interior/plant008.png", "zone": 1, "anchor_pos": Vector2(0.344, 0.562), "size_ratio": Vector2(0.057, 0.057)},
+	"interior_plant_009": {"texture_path": "res://assets/items/interior/plant009.png", "zone": 1, "anchor_pos": Vector2(0.343, 0.565), "size_ratio": Vector2(0.050, 0.050)},
+	"interior_plant_010": {"texture_path": "res://assets/items/interior/plant010.png", "zone": 5, "anchor_pos": Vector2(0.408, 0.304), "size_ratio": Vector2(0.095, 0.095)},
+	"interior_plant_011": {"texture_path": "res://assets/items/interior/plant011.png", "zone": 1, "anchor_pos": Vector2(0.310, 0.580), "size_ratio": Vector2(0.040, 0.070)},
+	"interior_plant_012": {"texture_path": "res://assets/items/interior/plant012.png", "zone": 2, "anchor_pos": Vector2(0.712, 0.591), "size_ratio": Vector2(0.084, 0.084)},
+	"interior_plant_013": {"texture_path": "res://assets/items/interior/plant013.png", "zone": 4, "anchor_pos": Vector2(0.715, 0.360), "size_ratio": Vector2(0.070, 0.070)},
+	"interior_plant_014": {"texture_path": "res://assets/items/interior/plant014.png", "zone": 1, "anchor_pos": Vector2(0.342, 0.552), "size_ratio": Vector2(0.086, 0.086)},
+	"interior_plant_015": {"texture_path": "res://assets/items/interior/plant015.png", "zone": 3, "anchor_pos": Vector2(0.297, 0.366), "size_ratio": Vector2(0.033, 0.056)},
+	"interior_plant_016": {"texture_path": "res://assets/items/interior/plant016.png", "zone": 2, "anchor_pos": Vector2(0.717, 0.582), "size_ratio": Vector2(0.090, 0.090)},
+	"interior_plant_017": {"texture_path": "res://assets/items/interior/plant017.png", "zone": 3, "anchor_pos": Vector2(0.294, 0.365), "size_ratio": Vector2(0.057, 0.057)},
+	"interior_plant_018": {"texture_path": "res://assets/items/interior/plant018.png", "zone": 2, "anchor_pos": Vector2(0.716, 0.590), "size_ratio": Vector2(0.071, 0.071)},
+	"interior_plant_019": {"texture_path": "res://assets/items/interior/plant019.png", "zone": 2, "anchor_pos": Vector2(0.716, 0.573), "size_ratio": Vector2(0.100, 0.100)},
+	"interior_plant_020": {"texture_path": "res://assets/items/interior/plant020.png", "zone": 7, "anchor_pos": Vector2(0.723, 0.698), "size_ratio": Vector2(0.149, 0.149)},
+	"interior_plant_021": {"texture_path": "res://assets/items/interior/plant021.png", "zone": 1, "anchor_pos": Vector2(0.341, 0.558), "size_ratio": Vector2(0.066, 0.066)},
+	"interior_plant_022": {"texture_path": "res://assets/items/interior/plant022.png", "zone": 2, "anchor_pos": Vector2(0.716, 0.585), "size_ratio": Vector2(0.087, 0.087)},
+	"interior_plant_023": {"texture_path": "res://assets/items/interior/plant023.png", "zone": 1, "anchor_pos": Vector2(0.341, 0.559), "size_ratio": Vector2(0.071, 0.071)},
+	"interior_plant_024": {"texture_path": "res://assets/items/interior/plant024.png", "zone": 7, "anchor_pos": Vector2(0.715, 0.702), "size_ratio": Vector2(0.167, 0.167)},
+	"interior_plant_025": {"texture_path": "res://assets/items/interior/plant025.png", "zone": 2, "anchor_pos": Vector2(0.718, 0.593), "size_ratio": Vector2(0.074, 0.074)},
+	"interior_plant_026": {"texture_path": "res://assets/items/interior/plant026.png", "zone": 1, "anchor_pos": Vector2(0.341, 0.568), "size_ratio": Vector2(0.056, 0.056)},
+	"interior_plant_027": {"texture_path": "res://assets/items/interior/plant027.png", "zone": 7, "anchor_pos": Vector2(0.716, 0.712), "size_ratio": Vector2(0.142, 0.142)},
+	"interior_plant_028": {"texture_path": "res://assets/items/interior/plant028.png", "zone": 1, "anchor_pos": Vector2(0.338, 0.567), "size_ratio": Vector2(0.059, 0.059)},
+	"interior_plant_029": {"texture_path": "res://assets/items/interior/plant029.png", "zone": 1, "anchor_pos": Vector2(0.339, 0.565), "size_ratio": Vector2(0.061, 0.061)},
+	"interior_plant_030": {"texture_path": "res://assets/items/interior/plant030.png", "zone": 3, "anchor_pos": Vector2(0.295, 0.367), "size_ratio": Vector2(0.061, 0.061)},
+	"interior_plant_031": {"texture_path": "res://assets/items/interior/plant031.png", "zone": 5, "anchor_pos": Vector2(0.406, 0.328), "size_ratio": Vector2(0.146, 0.146)},
+	"interior_plant_032": {"texture_path": "res://assets/items/interior/plant032.png", "zone": 5, "anchor_pos": Vector2(0.407, 0.317), "size_ratio": Vector2(0.121, 0.121)},
+	"interior_plant_033": {"texture_path": "res://assets/items/interior/plant033.png", "zone": 1, "anchor_pos": Vector2(0.340, 0.561), "size_ratio": Vector2(0.065, 0.065)},
+	"interior_plant_034": {"texture_path": "res://assets/items/interior/plant034.png", "zone": 2, "anchor_pos": Vector2(0.711, 0.591), "size_ratio": Vector2(0.073, 0.073)},
+	"interior_plant_035": {"texture_path": "res://assets/items/interior/plant035.png", "zone": 6, "anchor_pos": Vector2(0.606, 0.315), "size_ratio": Vector2(0.121, 0.121)},
+	"interior_plant_036": {"texture_path": "res://assets/items/interior/plant036.png", "zone": 4, "anchor_pos": Vector2(0.709, 0.354), "size_ratio": Vector2(0.047, 0.084)},
+	"interior_plant_037": {"texture_path": "res://assets/items/interior/plant037.png", "zone": 2, "anchor_pos": Vector2(0.708, 0.583), "size_ratio": Vector2(0.078, 0.078)},
+	"interior_plant_038": {"texture_path": "res://assets/items/interior/plant038.png", "zone": 1, "anchor_pos": Vector2(0.339, 0.568), "size_ratio": Vector2(0.053, 0.053)},
+	"interior_plant_039": {"texture_path": "res://assets/items/interior/plant039.png", "zone": 1, "anchor_pos": Vector2(0.341, 0.564), "size_ratio": Vector2(0.058, 0.058)},
+	"interior_plant_040": {"texture_path": "res://assets/items/interior/plant040.png", "zone": 6, "anchor_pos": Vector2(0.606, 0.314), "size_ratio": Vector2(0.113, 0.113)}
 }
 
 # ─────────────────────────────────────────────
@@ -281,26 +269,31 @@ func _ready() -> void:
 	if PlayerState.has_signal("interior_changed"):
 		PlayerState.interior_changed.connect(_on_player_interior_changed)
 
+	if PlayerState.has_signal("debug_interior_selection_changed"):
+		PlayerState.debug_interior_selection_changed.connect(_on_debug_interior_selection_changed)
+
+	if PlayerState.has_signal("debug_interior_install_requested"):
+		PlayerState.debug_interior_install_requested.connect(_on_debug_interior_install_requested)
+
 	if PlayerState.has_signal("pets_changed"):
 		PlayerState.pets_changed.connect(_on_player_pets_changed)
+
+	sync_debug_interior_selection_from_player_state()
 
 	# update_layers() не вызываем здесь явно:
 	# refresh_interior_items() → update_interior_layer(),
 	# а полный update_layers() запустится в первом _process()
 
 
-# _process — «процесс»: сглаживает движение/зум, обновляет таймер вибрации и все слои.
+# _process — «процесс»: обновляет ввод, плавно ведет зум и пересчитывает все слои.
 func _process(delta: float) -> void:
 	update_input_target()
 
-	# Плавная интерполяция всех динамических параметров
-	look_offset          = look_offset.lerp(target_look_offset, delta * motion_smoothness)
-	zoom_level           = lerp(zoom_level, target_zoom_level, delta * motion_smoothness)
-	periscope_zoom       = lerp(periscope_zoom, target_periscope_zoom, delta * motion_smoothness)
-	periscope_pan_offset = periscope_pan_offset.lerp(target_periscope_pan_offset, delta * motion_smoothness)
-	ship_offset          = ship_offset.lerp(target_ship_offset, delta * ship_motion_smoothness)
-
-	engine_vibration_time += delta
+	look_offset          = target_look_offset
+	zoom_level           = _smooth_scalar(zoom_level, target_zoom_level, delta, ZOOM_SMOOTHNESS)
+	periscope_zoom       = _smooth_scalar(periscope_zoom, target_periscope_zoom, delta, ZOOM_SMOOTHNESS)
+	periscope_pan_offset = target_periscope_pan_offset
+	ship_offset          = target_ship_offset
 
 	update_layers()
 
@@ -368,14 +361,18 @@ func _handle_mouse_motion(event: InputEventMouseMotion) -> void:
 
 # _handle_debug_key — «обработать debug-клавишу»: переключает и двигает выбранный ship-объект.
 func _handle_debug_key(event: InputEventKey) -> void:
+	sync_debug_interior_selection_from_player_state()
+
 	if debug_controller.selected_layer == "interior.ship":
 		if event.keycode == KEY_MINUS or event.keycode == KEY_KP_SUBTRACT:
 			debug_controller.cycle_ship_interior_item(interior_visual_data, -1)
+			PlayerState.set_debug_selected_interior_item(debug_controller.selected_item_id)
 			refresh_interior_items()
 			return
 
 		if event.keycode == KEY_EQUAL or event.keycode == KEY_PLUS or event.keycode == KEY_KP_ADD:
 			debug_controller.cycle_ship_interior_item(interior_visual_data, 1)
+			PlayerState.set_debug_selected_interior_item(debug_controller.selected_item_id)
 			refresh_interior_items()
 			return
 
@@ -415,6 +412,30 @@ func _handle_debug_key(event: InputEventKey) -> void:
 		update_interior_layer,
 		update_panel_layer_from_current_view
 	)
+
+
+# sync_debug_interior_selection_from_player_state — «синхронизировать debug-интерьер»: берет item_id.
+func sync_debug_interior_selection_from_player_state() -> void:
+	if debug_controller.selected_layer != "interior.ship":
+		return
+
+	var item_id := PlayerState.get_debug_selected_interior_item()
+	if item_id.is_empty():
+		return
+
+	if not interior_visual_data.has(item_id):
+		return
+
+	debug_controller.selected_item_id = item_id
+
+
+# _smooth_scalar — «сгладить число»: плавно приближает current к target и убирает мелкий хвост.
+func _smooth_scalar(current: float, target: float, delta: float, speed: float) -> float:
+	var weight: float = 1.0 - exp(-speed * delta)
+	var value: float = lerp(current, target, weight)
+	if abs(value - target) <= 0.0005:
+		return target
+	return value
 
 
 # ─────────────────────────────────────────────
@@ -749,21 +770,10 @@ func update_panel_layer(viewport_size: Vector2, screen_center: Vector2) -> void:
 		)
 		base_pos = anchor_screen - final_size * 0.5
 
-	# Вибрация: sin/cos с разными частотами для органичного движения
-	var vibration_strength := engine_vibration_strength
-	if is_turning_ship:
-		vibration_strength += engine_vibration_turn_bonus
-
-	var vibration := Vector2(
-		sin(engine_vibration_time * 1.0) * vibration_strength,
-		cos(engine_vibration_time * 2.0) * vibration_strength * 0.7
-	)
-
 	panel_layer.position = (
 		base_pos
 		- look_offset * PARALLAX_PANEL
 		+ Vector2(0.0, ZOOM_SHIFT_PANEL * zoom_level)
-		+ vibration
 	)
 
 
@@ -842,6 +852,29 @@ func _on_player_modules_changed() -> void:
 
 # _on_player_interior_changed — «изменился интерьер игрока»: пересоздает предметы интерьера.
 func _on_player_interior_changed() -> void:
+	refresh_interior_items()
+
+
+# _on_debug_interior_selection_changed — «изменился debug-интерьер»: выбирает item_id для ввода.
+func _on_debug_interior_selection_changed(item_id: String) -> void:
+	if debug_controller.selected_layer != "interior.ship":
+		return
+
+	if item_id.is_empty() or not interior_visual_data.has(item_id):
+		return
+
+	debug_controller.selected_item_id = item_id
+
+
+# _on_debug_interior_install_requested — «запрошена установка интерьера»: ставит в родную зону.
+func _on_debug_interior_install_requested(item_id: String) -> void:
+	if item_id.is_empty() or not interior_visual_data.has(item_id):
+		return
+
+	var data: Dictionary = interior_visual_data[item_id]
+	var zone_id := int(data.get("zone", 1))
+	PlayerState.install_interior_item(item_id, zone_id)
+	debug_controller.selected_item_id = item_id
 	refresh_interior_items()
 
 
