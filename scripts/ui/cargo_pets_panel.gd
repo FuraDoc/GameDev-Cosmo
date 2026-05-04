@@ -102,6 +102,7 @@ func _ready() -> void:
 
 	if PlayerState.has_signal("pets_changed"):
 		PlayerState.pets_changed.connect(_on_player_pets_changed)
+	Localization.language_changed.connect(_on_language_changed)
 
 	await get_tree().process_frame
 	_update_item_layout()
@@ -154,16 +155,16 @@ func _show_selected_pet_info() -> void:
 
 	var data = pet_data.get(selected_pet_id, null)
 	if data == null:
-		pet_name_label.text = "Неизвестный питомец"
-		pet_description_label.text = "Описание отсутствует."
+		pet_name_label.text = Localization.tr_text("cargo.unknown_pet")
+		pet_description_label.text = Localization.tr_text("cargo.no_description")
 		pet_history_label.text = ""
 	else:
-		pet_name_label.text = data.name
-		pet_description_label.text = data.description
-		pet_history_label.text = data.history
+		pet_name_label.text = Localization.get_pet_text(selected_pet_id, "name")
+		pet_description_label.text = Localization.get_pet_text(selected_pet_id, "description")
+		pet_history_label.text = Localization.get_pet_text(selected_pet_id, "history")
 
 	var active = PlayerState.is_pet_active(selected_pet_id)
-	action_button.text = "Вернуть" if active else "Призвать"
+	action_button.text = Localization.tr_text("pet.return") if active else Localization.tr_text("pet.summon")
 
 	_update_popup_layout()
 	tooltip_panel.visible = true
@@ -188,6 +189,10 @@ func _on_action_button_pressed() -> void:
 
 # _on_player_pets_changed — «изменились питомцы игрока»: обновляет капсулы и popup.
 func _on_player_pets_changed() -> void:
+	refresh()
+
+
+func _on_language_changed(_language_code: String) -> void:
 	refresh()
 
 

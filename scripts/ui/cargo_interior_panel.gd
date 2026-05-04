@@ -141,6 +141,7 @@ func _ready() -> void:
 
 	if PlayerState.has_signal("interior_changed"):
 		PlayerState.interior_changed.connect(_on_player_interior_changed)
+	Localization.language_changed.connect(_on_language_changed)
 
 	refresh()
 
@@ -151,8 +152,8 @@ func _build_item_data() -> void:
 	for i in range(1, ITEM_COUNT + 1):
 		var item_id := _item_id_from_index(i - 1)
 		item_data[item_id] = {
-			"title": "Растение № %d" % i,
-			"description": "Заглушка описания. Интерьерный предмет для кокпита, вариант %d." % i
+			"title": Localization.format_text("cargo.interior_item_title", [i]),
+			"description": Localization.format_text("cargo.interior_item_description", [i])
 		}
 
 
@@ -224,14 +225,14 @@ func _show_selected_item_info() -> void:
 	var data: Dictionary = item_data.get(selected_item_id, {})
 	var zone_id: int = PlayerState.get_interior_item_zone(selected_item_id)
 	var installed: bool = zone_id != -1
-	item_name_label.text = String(data.get("title", "Неизвестный предмет"))
-	item_description_label.text = String(data.get("description", "Описание отсутствует."))
+	item_name_label.text = String(data.get("title", Localization.tr_text("cargo.unknown_item")))
+	item_description_label.text = String(data.get("description", Localization.tr_text("cargo.no_description")))
 	if installed:
-		item_description_label.text += "\n\nУстановлен в зоне %d." % zone_id
+		item_description_label.text += "\n\n" + Localization.format_text("cargo.installed_zone", [zone_id])
 	else:
-		item_description_label.text += "\n\nНе установлен."
+		item_description_label.text += "\n\n" + Localization.tr_text("cargo.not_installed")
 
-	action_button.text = "Убрать" if installed else "Установить"
+	action_button.text = Localization.tr_text("cargo.remove") if installed else Localization.tr_text("cargo.install")
 	action_button.disabled = false
 	_update_popup_layout()
 	tooltip_panel.visible = true
@@ -281,6 +282,11 @@ func _on_action_button_pressed() -> void:
 
 # _on_player_interior_changed — «изменился интерьер игрока»: полностью обновляет панель.
 func _on_player_interior_changed() -> void:
+	refresh()
+
+
+func _on_language_changed(_language_code: String) -> void:
+	_build_item_data()
 	refresh()
 
 

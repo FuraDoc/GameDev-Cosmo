@@ -111,6 +111,7 @@ func _ready() -> void:
 	use_button.pressed.connect(_on_use_button_pressed)
 	PlayerState.item_added.connect(_on_item_added)
 	PlayerState.suit_changed.connect(_on_suit_changed)
+	Localization.language_changed.connect(_on_language_changed)
 	await get_tree().process_frame
 	_update_item_layout()
 	_update_popup_layout()
@@ -170,8 +171,8 @@ func _show_popup_for_item(item_id: String) -> void:
 
 	_selected_item_id = item_id
 	_debug_controller.selected_item_id = item_id
-	info_title_label.text = item_data.title
-	info_description_label.text = item_data.description
+	info_title_label.text = item_data.get_title()
+	info_description_label.text = item_data.get_description()
 	selected_hint_label.visible = false
 	_update_use_button(item_data)
 	_update_popup_layout()
@@ -189,7 +190,7 @@ func _update_use_button(item_data: ItemData) -> void:
 	use_button.visible = true
 	var is_active := PlayerState.has_active_suit(item_data.item_id)
 	use_button.disabled = is_active
-	use_button.text = "Используется" if is_active else "Использовать"
+	use_button.text = Localization.tr_text("cargo.equipped") if is_active else Localization.tr_text("cargo.use")
 
 
 # _hide_popup — "скрыть окно": сбрасывает выбор и прячет окно описания.
@@ -226,6 +227,10 @@ func _on_suit_changed(_active_suit_id: String) -> void:
 
 # _on_item_added — "при добавлении предмета": обновляет раздел, когда PlayerState получил предмет.
 func _on_item_added(_item_id: String) -> void:
+	refresh()
+
+
+func _on_language_changed(_language_code: String) -> void:
 	refresh()
 
 

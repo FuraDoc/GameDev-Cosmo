@@ -51,6 +51,7 @@ var monitor_texture_path := ""
 # _ready — «готово»: подключает кнопку, применяет фон и обновляет состояние карточки.
 func _ready():
 	action_button.pressed.connect(_on_action_button_pressed)
+	Localization.language_changed.connect(_on_language_changed)
 	apply_monitor_texture()
 	refresh()
 
@@ -76,7 +77,7 @@ func apply_monitor_texture() -> void:
 func refresh() -> void:
 	var exists = slot_data.get("exists", false)
 	
-	slot_title_label.text = "Слот %d" % slot_id
+	slot_title_label.text = Localization.format_text("save.slot", [slot_id])
 	
 	if mode == "new_game":
 		_setup_new_game_mode(exists)
@@ -97,13 +98,13 @@ func _setup_new_game_mode(exists: bool) -> void:
 	time_label.visible = false
 	
 	if exists:
-		var pilot_name = slot_data.get("pilot_name", "Без имени")
-		status_label.text = "Занят: %s" % pilot_name
+		var pilot_name = slot_data.get("pilot_name", Localization.tr_text("save.unnamed"))
+		status_label.text = Localization.format_text("save.occupied", [pilot_name])
 	else:
-		status_label.text = "Пустой слот"
+		status_label.text = Localization.tr_text("save.empty_slot")
 	
-	name_prompt_label.text = "Введите имя пилота"
-	action_button.text = "Подтвердить"
+	name_prompt_label.text = Localization.tr_text("save.enter_pilot")
+	action_button.text = Localization.tr_text("save.confirm")
 	action_button.disabled = false
 
 
@@ -120,28 +121,32 @@ func _setup_continue_mode(exists: bool) -> void:
 	action_button.visible = true
 	
 	if not exists:
-		status_label.text = "Пустой слот"
+		status_label.text = Localization.tr_text("save.empty_slot")
 		pilot_name_label.text = ""
 		location_label.text = ""
 		progress_label.text = ""
 		time_label.text = ""
-		action_button.text = "Загрузить"
+		action_button.text = Localization.tr_text("save.load")
 		action_button.disabled = true
 		return
 	
-	var pilot_name = slot_data.get("pilot_name", "Без имени")
-	var location_name = slot_data.get("current_adventure_id", "Неизвестно")
+	var pilot_name = slot_data.get("pilot_name", Localization.tr_text("save.unnamed"))
+	var location_name = slot_data.get("current_adventure_id", Localization.tr_text("save.unknown"))
 	var completed = slot_data.get("completed_quests_count", 0)
 	var play_time_seconds = slot_data.get("play_time_seconds", 0)
 	
-	status_label.text = "Сохранение найдено"
-	pilot_name_label.text = "Пилот: %s" % pilot_name
-	location_label.text = "Локация: %s" % location_name
-	progress_label.text = "Квестов пройдено: %d" % completed
-	time_label.text = "Время в игре: %s" % _format_play_time(play_time_seconds)
+	status_label.text = Localization.tr_text("save.found")
+	pilot_name_label.text = Localization.format_text("save.pilot", [pilot_name])
+	location_label.text = Localization.format_text("save.location", [location_name])
+	progress_label.text = Localization.format_text("save.completed_quests", [completed])
+	time_label.text = Localization.format_text("save.play_time", [_format_play_time(play_time_seconds)])
 	
-	action_button.text = "Загрузить"
+	action_button.text = Localization.tr_text("save.load")
 	action_button.disabled = false
+
+
+func _on_language_changed(_language_code: String) -> void:
+	refresh()
 
 
 # _format_play_time — «форматировать игровое время»: переводит секунды в строку ЧЧ:ММ.

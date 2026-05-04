@@ -61,6 +61,8 @@ var continue_from_runtime: bool = false
 # _ready — «готово»: подключает кнопку закрытия и загружает квест по quest_path.
 func _ready():
 	close_button.pressed.connect(_on_header_close_button_pressed)
+	Localization.language_changed.connect(_on_language_changed)
+	_apply_localization()
 	
 	if quest_path != "":
 		load_quest(quest_path)
@@ -114,7 +116,7 @@ func show_node(node_id: String):
 	
 	var node = quest_data["nodes"][node_id]
 	
-	title_label.text = quest_data.get("title", "Текстовый квест")
+	title_label.text = quest_data.get("title", Localization.tr_text("quest.default_title"))
 	story_label.text = node.get("text", "")
 	scroll_container.scroll_vertical = 0
 	
@@ -161,7 +163,7 @@ func clear_choices():
 # add_finish_button — «добавить кнопку завершения»: создает финальную кнопку закрытия квеста.
 func add_finish_button():
 	var finish_button = Button.new()
-	finish_button.text = "Завершить"
+	finish_button.text = Localization.tr_text("quest.finish")
 	finish_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	finish_button.custom_minimum_size = Vector2(0, 44)
 	finish_button.pressed.connect(_on_finish_button_pressed)
@@ -171,7 +173,7 @@ func add_finish_button():
 # add_choice_button — «добавить кнопку выбора»: создает кнопку перехода на next-узел.
 func add_choice_button(choice: Dictionary):
 	var button = Button.new()
-	button.text = choice.get("text", "Далее")
+	button.text = choice.get("text", Localization.tr_text("quest.next"))
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.custom_minimum_size = Vector2(0, 44)
 	
@@ -200,3 +202,11 @@ func _on_header_close_button_pressed():
 func _on_finish_button_pressed():
 	quest_completed.emit()
 	queue_free()
+
+
+func _apply_localization() -> void:
+	close_button.text = Localization.tr_text("quest.close")
+
+
+func _on_language_changed(_language_code: String) -> void:
+	_apply_localization()

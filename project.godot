@@ -23,6 +23,7 @@ PlayerState="*uid://bys734ay40avv"
 QuestRuntime="*uid://hcjm88o37fis"
 SaveManager="*uid://6uywycxgppkw"
 Dialogic="*uid://ds2q0uclmolvu"
+Localization="*res://scripts/autoload/localization.gd"
 MCPScreenshot="*res://addons/godot_mcp/mcp_screenshot_service.gd"
 MCPInputService="*res://addons/godot_mcp/mcp_input_service.gd"
 MCPGameInspector="*res://addons/godot_mcp/mcp_game_inspector_service.gd"
@@ -40,7 +41,7 @@ window/size/viewport_height=1080
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/dialogic/plugin.cfg", "res://addons/godot_mcp/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot_mcp/plugin.cfg")
 
 [input]
 

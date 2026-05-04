@@ -153,9 +153,9 @@ func _on_next_adventure_requested() -> void:
 	var confirm_message := ""
 	
 	if QuestRuntime.is_completed():
-		confirm_message = "Совершить прыжок в другую локацию?"
+		confirm_message = Localization.tr_text("ship.jump_confirm_completed")
 	else:
-		confirm_message = "Здесь еще есть кое-что интересное! Оставить локацию и лететь дальше?"
+		confirm_message = Localization.tr_text("ship.jump_confirm_unfinished")
 	
 	ui_controller.confirm_next_adventure(confirm_message, Callable(self, "_confirm_and_start_next_adventure"))
 

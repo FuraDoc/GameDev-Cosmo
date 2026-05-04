@@ -52,7 +52,9 @@ func _ready() -> void:
 	text_quest_button.pressed.connect(func(): text_quest_requested.emit())
 	continue_quest_button.pressed.connect(func(): continue_quest_requested.emit())
 	cargo_bay_button.pressed.connect(func(): cargo_bay_requested.emit())
+	Localization.language_changed.connect(_on_language_changed)
 
+	_apply_localization()
 	update_quest_buttons()
 
 
@@ -76,6 +78,18 @@ func set_main_buttons_enabled(enabled: bool) -> void:
 	else:
 		text_quest_button.disabled    = true
 		continue_quest_button.disabled = true
+
+
+func _apply_localization() -> void:
+	text_quest_button.text = Localization.tr_text("ship.quest")
+	continue_quest_button.text = Localization.tr_text("ship.continue_quest")
+	next_adventure_button.text = Localization.tr_text("ship.next_adventure")
+	menu_button.text = Localization.tr_text("ship.menu")
+	cargo_bay_button.text = Localization.tr_text("ship.cargo_bay")
+
+
+func _on_language_changed(_language_code: String) -> void:
+	_apply_localization()
 
 
 # ── Квест ──────────────────────────────────────────────
@@ -107,10 +121,10 @@ func open_text_quest(path: String, continue_from_runtime: bool = false) -> void:
 # confirm_next_adventure — «подтвердить следующее приключение»: показывает стандартный диалог.
 func confirm_next_adventure(message: String, on_confirm: Callable) -> void:
 	var dialog                      := ConfirmationDialog.new()
-	dialog.title                    = "Подтверждение"
+	dialog.title                    = Localization.tr_text("ship.confirmation")
 	dialog.dialog_text              = message
-	dialog.get_ok_button().text     = "Принять"
-	dialog.get_cancel_button().text = "Отклонить"
+	dialog.get_ok_button().text     = Localization.tr_text("ship.accept")
+	dialog.get_cancel_button().text = Localization.tr_text("ship.reject")
 
 	dialog.confirmed.connect(func():
 		if on_confirm.is_valid():

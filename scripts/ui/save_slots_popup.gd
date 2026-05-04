@@ -32,6 +32,7 @@ var monitor_texture_path := "res://assets/backgrounds/equip/save_background.png"
 func _ready():
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	back_button.pressed.connect(_on_back_button_pressed)
+	Localization.language_changed.connect(_on_language_changed)
 	setup_mode()
 	build_cards()
 
@@ -39,9 +40,15 @@ func _ready():
 # setup_mode — «настроить режим»: выставляет заголовок по режиму новой игры/продолжения.
 func setup_mode() -> void:
 	if mode == "new_game":
-		title_label.text = "Новая игра"
+		title_label.text = Localization.tr_text("save.new_game")
 	else:
-		title_label.text = "Продолжить"
+		title_label.text = Localization.tr_text("save.continue")
+	back_button.text = Localization.tr_text("save.back")
+
+
+func _on_language_changed(_language_code: String) -> void:
+	setup_mode()
+	build_cards()
 
 
 # build_cards — «построить карточки»: очищает контейнер и создает UI для всех слотов.

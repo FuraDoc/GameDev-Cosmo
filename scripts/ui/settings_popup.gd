@@ -5,6 +5,10 @@ signal settings_closed
 
 # Выпадающий список разрешений: хранит варианты 1080/1440/2160.
 @onready var resolution_option: OptionButton = $CenterContainer/Panel/MarginContainer/VBoxContainer/ResolutionRow/ResolutionOption
+@onready var title_label: Label = $CenterContainer/Panel/MarginContainer/VBoxContainer/TitleLabel
+@onready var resolution_label: Label = $CenterContainer/Panel/MarginContainer/VBoxContainer/ResolutionRow/ResolutionLabel
+@onready var language_label: Label = $CenterContainer/Panel/MarginContainer/VBoxContainer/LanguageRow/LanguageLabel
+@onready var language_option: OptionButton = $CenterContainer/Panel/MarginContainer/VBoxContainer/LanguageRow/LanguageOption
 
 # Кнопка применения выбранного разрешения.
 @onready var apply_button: Button = $CenterContainer/Panel/MarginContainer/VBoxContainer/ButtonsRow/ApplyButton
@@ -25,8 +29,13 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_populate_resolution_options()
 	_select_current_resolution()
+	_populate_language_options()
+	_select_current_language()
+	_apply_localization()
 	apply_button.pressed.connect(_on_apply_button_pressed)
 	cancel_button.pressed.connect(_on_cancel_button_pressed)
+	language_option.item_selected.connect(_on_language_option_selected)
+	Localization.language_changed.connect(_on_language_changed)
 
 
 # _populate_resolution_options — «заполнить варианты разрешения»: добавляет 3 пункта в OptionButton.
@@ -34,6 +43,33 @@ func _populate_resolution_options() -> void:
 	resolution_option.clear()
 	for index in range(resolution_presets.size()):
 		resolution_option.add_item(String(resolution_presets[index]["label"]), index)
+
+
+func _populate_language_options() -> void:
+	language_option.clear()
+	language_option.add_item(Localization.tr_text("language.ru"), 0)
+	language_option.set_item_metadata(0, Localization.LANGUAGE_RU)
+	language_option.add_item(Localization.tr_text("language.en"), 1)
+	language_option.set_item_metadata(1, Localization.LANGUAGE_EN)
+	language_option.add_item(Localization.tr_text("language.zh_cn"), 2)
+	language_option.set_item_metadata(2, Localization.LANGUAGE_ZH_CN)
+
+
+func _select_current_language() -> void:
+	for index in range(language_option.get_item_count()):
+		if String(language_option.get_item_metadata(index)) == Localization.get_language():
+			language_option.select(index)
+			return
+
+
+func _apply_localization() -> void:
+	title_label.text = Localization.tr_text("settings.title")
+	resolution_label.text = Localization.tr_text("settings.resolution")
+	language_label.text = Localization.tr_text("settings.language")
+	apply_button.text = Localization.tr_text("settings.apply")
+	cancel_button.text = Localization.tr_text("settings.cancel")
+	_populate_language_options()
+	_select_current_language()
 
 
 # _select_current_resolution — «выбрать текущее разрешение»: подсвечивает ближайший пункт.
@@ -55,9 +91,27 @@ func _on_apply_button_pressed() -> void:
 	if selected_index < 0 or selected_index >= resolution_presets.size():
 		return
 
+	var selected_language := _get_selected_language()
+	Localization.set_language(selected_language)
 	var selected_size: Vector2i = resolution_presets[selected_index]["size"] as Vector2i
 	await _apply_resolution(selected_size)
 	_close()
+
+
+func _on_language_option_selected(_index: int) -> void:
+	var selected_language := _get_selected_language()
+	Localization.set_language(selected_language)
+
+
+func _on_language_changed(_language_code: String) -> void:
+	_apply_localization()
+
+
+func _get_selected_language() -> String:
+	var selected_index := language_option.selected
+	if selected_index < 0:
+		return Localization.get_language()
+	return String(language_option.get_item_metadata(selected_index))
 
 
 # _apply_resolution — «применить разрешение»: меняет размер корневого окна и центрирует его.

@@ -15,3 +15,11 @@ class_name ItemData
 
 # equipment_texture — "текстура снаряжения": картинка предмета на фоне раздела Снаряжение.
 @export var equipment_texture: Texture2D
+
+
+func get_title() -> String:
+	return Localization.get_item_title(self)
+
+
+func get_description() -> String:
+	return Localization.get_item_description(self)

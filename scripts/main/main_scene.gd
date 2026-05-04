@@ -5,6 +5,7 @@ extends Control
 # Узлы фона и затемнения; fade_overlay используется для плавного входа из чёрного.
 @onready var background_texture = $BackgroundTexture
 @onready var fade_overlay = $FadeOverlay
+@onready var subtitle_label = $UI/VBoxContainer/SubtitleLabel
 
 # Кнопки главного меню; обработчики подключаются в _ready.
 @onready var new_game_button = $UI/VBoxContainer/MenuPanel/MarginContainer/ButtonsContainer/NewGameButton
@@ -31,6 +32,8 @@ func _ready():
 	continue_button.pressed.connect(_on_continue_pressed)
 	settings_button.pressed.connect(_on_settings_pressed)
 	exit_button.pressed.connect(_on_exit_pressed)
+	Localization.language_changed.connect(_on_language_changed)
+	_apply_localization()
 	update_continue_button()
 
 
@@ -53,6 +56,18 @@ func fade_from_black(duration: float) -> void:
 # update_continue_button — "обновить кнопку продолжения": включает её, если есть сохранение.
 func update_continue_button():
 	continue_button.disabled = not SaveManager.has_any_save()
+
+
+func _apply_localization() -> void:
+	new_game_button.text = Localization.tr_text("main.new_game")
+	continue_button.text = Localization.tr_text("main.continue")
+	settings_button.text = Localization.tr_text("main.settings")
+	exit_button.text = Localization.tr_text("main.exit")
+	subtitle_label.text = Localization.tr_text("main.subtitle")
+
+
+func _on_language_changed(_language_code: String) -> void:
+	_apply_localization()
 
 
 # _on_new_game_pressed — "при нажатии новой игры": открывает выбор слота в режиме new_game.

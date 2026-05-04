@@ -41,10 +41,10 @@ const MODULES_PER_ZONE := 10
 
 # Описание зон модулей: zone_id, шаблон item_id, шаблон иконки и подпись зоны.
 const ZONE_CONFIGS := [
-	["sleep", "module_sleep_%03d", "res://assets/items/hardware/pic.module.sleep%03d.png", "Спальная зона"],
-	["workzone", "module_workzone_%03d", "res://assets/items/hardware/pic.module.workzone%03d.png", "Рабочая зона"],
-	["front", "module_front_%03d", "res://assets/items/hardware/pic.module.front%03d.png", "Зона отдыха"],
-	["panel", "module_panel_%03d", "res://assets/items/frontpanel/pic.frontpanel%03d.png", "Передняя панель"],
+	["sleep", "module_sleep_%03d", "res://assets/items/hardware/pic.module.sleep%03d.png", "cargo.sleep_zone"],
+	["workzone", "module_workzone_%03d", "res://assets/items/hardware/pic.module.workzone%03d.png", "cargo.workzone"],
+	["front", "module_front_%03d", "res://assets/items/hardware/pic.module.front%03d.png", "cargo.front_zone"],
+	["panel", "module_panel_%03d", "res://assets/items/frontpanel/pic.frontpanel%03d.png", "cargo.front_panel"],
 ]
 
 # Выбранный module_id: используется для popup, установки и debug-позиционирования.
@@ -149,6 +149,7 @@ func _ready() -> void:
 
 	if PlayerState.has_signal("modules_changed"):
 		PlayerState.modules_changed.connect(_on_player_modules_changed)
+	Localization.language_changed.connect(_on_language_changed)
 
 	refresh()
 
@@ -161,21 +162,21 @@ func _build_modules_data() -> void:
 		var zone_id: String = zone_cfg[0]
 		var id_template: String = zone_cfg[1]
 		var icon_template: String = zone_cfg[2]
-		var zone_label: String = zone_cfg[3]
+		var zone_label: String = Localization.tr_text(zone_cfg[3])
 
 		for i in range(1, MODULES_PER_ZONE + 1):
 			var item_id := id_template % i
 			modules_data[item_id] = {
 				"id": item_id,
 				"zone": zone_id,
-				"title": "%s, модуль %d" % [zone_label, i],
-				"description": "Тестовое описание. %s, модуль %d." % [zone_label, i],
+				"title": Localization.format_text("cargo.module_title", [zone_label, i]),
+				"description": Localization.format_text("cargo.module_description", [zone_label, i]),
 				"icon_path": icon_template % i,
 			}
 
 	for i in range(1, MODULES_PER_ZONE + 1):
 		var panel_id := "module_panel_%03d" % i
-		modules_data[panel_id]["description"] = "Заменяет верхнюю переднюю панель кокпита на вариант %d." % i
+		modules_data[panel_id]["description"] = Localization.format_text("cargo.panel_description", [i])
 
 
 # _build_cargo_visual_data — «построить визуальные данные Cargo»: создает сетку и применяет overrides.
@@ -326,9 +327,9 @@ func _show_selected_item_info() -> void:
 
 	var data = modules_data.get(selected_item_id, null)
 	if data == null:
-		item_name_label.text = "Неизвестный модуль"
-		item_description_label.text = "Описание отсутствует."
-		action_button.text = "Установить"
+		item_name_label.text = Localization.tr_text("cargo.unknown_module")
+		item_description_label.text = Localization.tr_text("cargo.no_description")
+		action_button.text = Localization.tr_text("cargo.install")
 		action_button.disabled = true
 		_update_tooltip_layout()
 		tooltip_panel.visible = true
@@ -340,7 +341,7 @@ func _show_selected_item_info() -> void:
 
 	item_name_label.text = data["title"]
 	item_description_label.text = data["description"]
-	action_button.text = "Убрать" if installed else "Установить"
+	action_button.text = Localization.tr_text("cargo.remove") if installed else Localization.tr_text("cargo.install")
 	action_button.disabled = false
 	_update_tooltip_layout()
 	tooltip_panel.visible = true
@@ -369,6 +370,11 @@ func _on_action_button_pressed() -> void:
 
 # _on_player_modules_changed — «изменились модули игрока»: обновляет список и popup.
 func _on_player_modules_changed() -> void:
+	refresh()
+
+
+func _on_language_changed(_language_code: String) -> void:
+	_build_modules_data()
 	refresh()
 
 

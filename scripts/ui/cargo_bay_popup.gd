@@ -104,11 +104,8 @@ func _ready() -> void:
 		"close": close_button,
 	}
 
-	equipment_button.text = "Снаряжение"
-	interior_button.text = "Интерьер"
-	hardware_button.text = "Оборудование"
-	pets_button.text = "Питомцы"
-	close_button.text = "Закрыть"
+	_apply_localization()
+	Localization.language_changed.connect(_on_language_changed)
 
 	equipment_button.pressed.connect(func(): show_section("equipment"))
 	interior_button.pressed.connect(func(): show_section("interior"))
@@ -137,6 +134,18 @@ func _update_section_buttons() -> void:
 	hardware_button.disabled = current_section == "hardware"
 	pets_button.disabled = current_section == "pets"
 	close_button.disabled = false
+
+
+func _apply_localization() -> void:
+	equipment_button.text = Localization.tr_text("cargo.equipment")
+	interior_button.text = Localization.tr_text("cargo.interior")
+	hardware_button.text = Localization.tr_text("cargo.hardware")
+	pets_button.text = Localization.tr_text("cargo.pets")
+	close_button.text = Localization.tr_text("cargo.close")
+
+
+func _on_language_changed(_language_code: String) -> void:
+	_apply_localization()
 
 
 # _rebuild_content — «пересобрать содержимое»: удаляет старую панель и создает новую.

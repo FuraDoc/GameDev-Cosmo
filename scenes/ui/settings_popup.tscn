@@ -29,7 +29,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Panel" type="PanelContainer" parent="CenterContainer"]
-custom_minimum_size = Vector2(560, 260)
+custom_minimum_size = Vector2(560, 330)
 layout_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="CenterContainer/Panel"]
@@ -63,6 +63,23 @@ text = "Разрешение экрана"
 vertical_alignment = 1
 
 [node name="ResolutionOption" type="OptionButton" parent="CenterContainer/Panel/MarginContainer/VBoxContainer/ResolutionRow"]
+custom_minimum_size = Vector2(160, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+
+[node name="LanguageRow" type="HBoxContainer" parent="CenterContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="LanguageLabel" type="Label" parent="CenterContainer/Panel/MarginContainer/VBoxContainer/LanguageRow"]
+custom_minimum_size = Vector2(260, 44)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "Язык"
+vertical_alignment = 1
+
+[node name="LanguageOption" type="OptionButton" parent="CenterContainer/Panel/MarginContainer/VBoxContainer/LanguageRow"]
 custom_minimum_size = Vector2(160, 44)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
